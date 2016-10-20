@@ -1,0 +1,10 @@
+applications:
+- nagios
+classes:
+- service.nagios.support
+parameters:
+  nagios:
+    server:
+      enabled: true
+      bind:
+        address: 0.0.0.0

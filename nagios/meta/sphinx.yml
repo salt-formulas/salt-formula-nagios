@@ -1,0 +1,9 @@
+doc:
+  name: nagios
+  description: Nagios is an open source monitoring system - The Industry Standard In IT Infrastructure Monitoring
+  role:
+{%- if pillar.nagios.server is defined %}
+    server:
+      name: server
+      param: {}
+{%- endif %}
