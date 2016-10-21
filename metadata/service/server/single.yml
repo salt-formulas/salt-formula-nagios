@@ -8,3 +8,16 @@ parameters:
       enabled: true
       ui_username: nagiosadmin
       ui_password: r00tme
+      check_external_commands: 1
+      command_check_interval: 15s
+      log_external_commands: 1
+      log_passive_checks: 1
+      log_rotation_method: d
+      accept_passive_service_checks: 1
+      accept_passive_host_checks: 0
+      enable_notifications: 1
+      execute_service_checks: 1
+      execute_host_checks: 1
+      process_performance_data: 0
+      check_service_freshness: 1
+      check_host_freshness: 0

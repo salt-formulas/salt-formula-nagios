@@ -18,4 +18,12 @@ nagios-cgi-username:
     - htpasswd_file: {{ nagios.ui_htpasswd_file }}
     - options: d
     - force: true
+
+nagios-server-config:
+  file.managed:
+    - name: {{ nagios.conf }}
+    - source: salt://nagios/files/nagios.cfg
+    - template: jinja
+    - watch_in:
+      - service: {{ nagios.service }}
 {%- endif %}
