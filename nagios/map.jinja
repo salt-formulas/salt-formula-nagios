@@ -19,6 +19,9 @@
         'state_retention_file': '/var/lib/nagios3/retention.dat',
         'status_file': '/var/cache/nagios3/status.dat',
         'temp_file': '/var/cache/nagios3/nagios.tmp',
+        'ui_htpasswd_file': '/etc/nagios3/htpasswd.users',
+        'ui_username': 'nagiosadmin',
+        'ui_password': 'nagios',
     },
     'RedHat': {
         'cgi_conf': '/etc/nagios/cgi.cfg',
@@ -40,5 +43,8 @@
         'state_retention_file': '/var/log/nagios/retention.dat',
         'status_file': '/var/log/nagios/status.dat',
         'temp_file': '/var/log/nagios/nagios.tmp',
+        'ui_htpasswd_file': '/etc/nagios/htpasswd.users',
+        'ui_username': 'nagiosadmin',
+        'ui_password': 'nagios',
     },
-}, merge=salt['pillar.get']('nagios')) %}
+}, merge=salt['pillar.get']('nagios:server')) %}

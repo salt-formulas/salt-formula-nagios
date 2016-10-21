@@ -10,4 +10,12 @@ nagios-service:
     - enable: true
     - require:
       - pkg: nagios-server-package
+
+nagios-cgi-username:
+  webutil.user_exists:
+    - name: {{ nagios.ui_username }}
+    - password: {{ nagios.ui_password }}
+    - htpasswd_file: {{ nagios.ui_htpasswd_file }}
+    - options: d
+    - force: true
 {%- endif %}

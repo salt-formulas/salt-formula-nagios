@@ -6,5 +6,5 @@ parameters:
   nagios:
     server:
       enabled: true
-      bind:
-        address: 0.0.0.0
+      ui_username: nagiosadmin
+      ui_password: r00tme
