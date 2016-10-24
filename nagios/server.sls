@@ -1,29 +1,29 @@
-{%- from "nagios/map.jinja" import nagios with context %}
-{%- if nagios.enabled %}
+{%- from "nagios/map.jinja" import server with context %}
+{%- if server.enabled %}
 nagios-server-package:
   pkg.installed:
-    - name: {{ nagios.package}}
+    - name: {{ server.package}}
 
 nagios-service:
   service.running:
-    - name: {{ nagios.service }}
+    - name: {{ server.service }}
     - enable: true
     - require:
       - pkg: nagios-server-package
 
 nagios-cgi-username:
   webutil.user_exists:
-    - name: {{ nagios.ui_username }}
-    - password: {{ nagios.ui_password }}
-    - htpasswd_file: {{ nagios.ui_htpasswd_file }}
+    - name: {{ server.ui_username }}
+    - password: {{ server.ui_password }}
+    - htpasswd_file: {{ server.ui_htpasswd_file }}
     - options: d
     - force: true
 
 nagios-server-config:
   file.managed:
-    - name: {{ nagios.conf }}
+    - name: {{ server.conf }}
     - source: salt://nagios/files/nagios.cfg
     - template: jinja
     - watch_in:
-      - service: {{ nagios.service }}
+      - service: {{ server.service }}
 {%- endif %}

@@ -1,4 +1,4 @@
-{% set nagios = salt['grains.filter_by']({
+{% set server = salt['grains.filter_by']({
     'Debian': {
         'cgi_conf': '/etc/nagios3/cgi.cfg',
         'check_result_path': '/var/lib/nagios3/spool/checkresults',
