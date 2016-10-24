@@ -1,6 +1,7 @@
 {% set server = salt['grains.filter_by']({
     'Debian': {
         'cgi_conf': '/etc/nagios3/cgi.cfg',
+        'url_html_path': '/nagios3',
         'check_result_path': '/var/lib/nagios3/spool/checkresults',
         'command_file': '/var/lib/nagios3/rw/nagios.cmd',
         'conf': '/etc/nagios3/nagios.cfg',
@@ -15,6 +16,7 @@
         'precached_object_file': '/var/lib/nagios3/objects.precache',
         'resource_file': '/etc/nagios3/resource.cfg',
         'package': 'nagios3',
+        'cgi_package': 'nagios3-cgi',
         'service': 'nagios3',
         'state_retention_file': '/var/lib/nagios3/retention.dat',
         'status_file': '/var/cache/nagios3/status.dat',
@@ -25,6 +27,7 @@
     },
     'RedHat': {
         'cgi_conf': '/etc/nagios/cgi.cfg',
+        'url_html_path': '/nagios3',
         'check_result_path': '/var/log/nagios/spool/checkresults',
         'command_file': '/var/spool/nagios/cmd/nagios.cmd',
         'conf': '/etc/nagios/nagios.cfg',
@@ -39,6 +42,7 @@
         'precached_object_file': '/var/log/nagios/objects.precache',
         'resource_file': '/etc/nagios/private/resource.cfg',
         'package': 'nagios',
+        'cgi_package': None,
         'service': 'nagios',
         'state_retention_file': '/var/log/nagios/retention.dat',
         'status_file': '/var/log/nagios/status.dat',

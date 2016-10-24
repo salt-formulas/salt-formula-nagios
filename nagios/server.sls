@@ -4,6 +4,12 @@ nagios-server-package:
   pkg.installed:
     - name: {{ server.package}}
 
+{% if server.cgi_package %}
+nagios-cgi-server-package:
+  pkg.installed:
+    - name: {{ server.cgi_package}}
+{% endif %}
+
 nagios-service:
   service.running:
     - name: {{ server.service }}
@@ -19,6 +25,18 @@ nagios-cgi-username:
     - options: d
     - force: true
 
+nagios-cgi-config:
+  file.managed:
+    - name: {{ server.cgi_conf }}
+    - source: salt://nagios/files/cgi.cfg
+    - template: jinja
+    - require:
+{% if server.cgi_package %}
+      - pkg: nagios-cgi-server-package
+{% else %}
+      - pkg: nagios-server-package
+{% endif %}
+
 nagios-server-config:
   file.managed:
     - name: {{ server.conf }}
@@ -26,4 +44,5 @@ nagios-server-config:
     - template: jinja
     - watch_in:
       - service: {{ server.service }}
+
 {%- endif %}
