@@ -19,13 +19,19 @@ nagios-cgi-server-package:
     - name: {{ ui.package}}
 {% endif %}
 
+{% if ui.basic_auth is defined and ui.basic_auth.password is defined %}
 nagios-cgi-username:
   webutil.user_exists:
-    - name: {{ ui.username }}
-    - password: {{ ui.password }}
+    - name: {{ ui.basic_auth.get('username', 'nagiosadmin') }}
+    - password: {{ ui.basic_auth.password }}
     - htpasswd_file: {{ ui.htpasswd_file }}
     - options: d
     - force: true
+{% else %}
+remove-basic_htpasswd_file:
+  file.absent:
+    - name: {{ ui.htpasswd_file }}
+{% endif %}
 
 nagios-cgi-config:
   file.managed:

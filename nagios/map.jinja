@@ -6,8 +6,10 @@
         'htpasswd_file': '/etc/nagios3/htpasswd.users',
         'physical_html_path': '/usr/share/nagios3/htdocs',
         'nagios_check_command': '/usr/lib/nagios/plugins/check_nagios /var/cache/nagios3/status.dat 5 \'/usr/sbin/nagios3\'',
-        'username': 'nagiosadmin',
-        'password': 'nagios',
+        'basic_auth': {
+          'username': 'nagiosadmin',
+          'password': 'nagios',
+        },
     },
     'RedHat': {
         'cgi_conf': '/etc/nagios/cgi.cfg',
@@ -16,8 +18,10 @@
         'htpasswd_file': '/etc/nagios/htpasswd.users',
         'physical_html_path': '/usr/share/nagios/html',
         'nagios_check_command': '/usr/lib64/nagios/plugins/check_nagios -F /var/log/nagios/status.dat -e 5 -C /usr/sbin/nagios',
-        'username': 'nagiosadmin',
-        'password': 'nagios',
+        'basic_auth': {
+          'username': 'nagiosadmin',
+          'password': 'nagios',
+        },
     },
 }, merge=salt['pillar.get']('nagios:ui')) %}
 

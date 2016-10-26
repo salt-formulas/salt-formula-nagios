@@ -36,15 +36,16 @@ All Nagios configurations can be configured
         check_service_freshness: 1
         check_host_freshness: 0
 
-Nagios UI configrations
+Nagios UI configrations with HTTP basic authentication
 
 .. code-block:: yaml
 
     nagios:
       ui:
         enabled: true
-        username: nagiosadmin
-        password: secret
+        basic_auth:
+          username: nagiosadmin
+          password: secret
 
 Read more
 =========
