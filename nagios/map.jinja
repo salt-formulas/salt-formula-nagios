@@ -5,6 +5,9 @@
         'package': 'nagios3-cgi',
         'htpasswd_file': '/etc/nagios3/htpasswd.users',
         'physical_html_path': '/usr/share/nagios3/htdocs',
+        'apache_service': 'apache2',
+        'apache_config': '/etc/nagios3/apache2.conf',
+        'apache_log_dir': '/var/log/apache2/',
         'nagios_check_command': '/usr/lib/nagios/plugins/check_nagios /var/cache/nagios3/status.dat 5 \'/usr/sbin/nagios3\'',
         'basic_auth': {
           'username': 'nagiosadmin',
@@ -17,6 +20,9 @@
         'package': None,
         'htpasswd_file': '/etc/nagios/htpasswd.users',
         'physical_html_path': '/usr/share/nagios/html',
+        'apache_service': 'httpd',
+        'apache_config': '/etc/nagios/apache2.conf',
+        'apache_log_dir': '/var/log/httpd/',
         'nagios_check_command': '/usr/lib64/nagios/plugins/check_nagios -F /var/log/nagios/status.dat -e 5 -C /usr/sbin/nagios',
         'basic_auth': {
           'username': 'nagiosadmin',

@@ -45,13 +45,29 @@ nagios-cgi-config:
       - pkg: nagios-server-package
 {% endif %}
 
-{% else %}
-{% if ui.package %}
-nagios-cgi-server-package:
+{# Apache2 is installed by dependency, just configure it! #}
+apache_services:
+  service.running:
+  - name: {{ ui.apache_service }}
+  - enable: true
+  - watch:
+    - file: nagios_apache_config
+
+nagios_apache_config:
+ file.managed:
+ - name: {{ ui.apache_config }}
+ - source: salt://nagios/files/nagios.conf.{{ grains.os_family }}
+ - template: jinja
+ - mode: 644
+ - user: root
+ - group: root
+
+{% else %} {% if ui.package %}
+remove-nagios-cgi-server-package:
   pkg.removed:
     - name: {{ ui.package}}
 {% endif %}
-{% endif %} {# cgi enabled #}
+{% endif %} {# ui enabled #}
 
 nagios-server-config:
   file.managed:

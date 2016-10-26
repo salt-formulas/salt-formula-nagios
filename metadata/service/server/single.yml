@@ -21,6 +21,8 @@ parameters:
       check_host_freshness: 0
     ui:
       enabled: true
+      bind: 0.0.0.0
+      port: 80
       basic_auth:
         username: nagiosadmin
         password: r00tme
