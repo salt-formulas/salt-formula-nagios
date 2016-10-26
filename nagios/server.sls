@@ -45,4 +45,18 @@ nagios-server-config:
     - watch_in:
       - service: {{ server.service }}
 
+{% for cfg_dir in server.get('cfg_dir', []) -%}
+{{cfg_dir}} config nagios dir:
+  file.directory:
+    - name: {{ cfg_dir }}
+    - user: nagios
+    - group: nagios
+    - mode: 755
+    - makedirs: True
+    - require:
+      - pkg: nagios-server-package
+    - watch_in:
+      - service: {{ server.service }}
+{% endfor -%}
+
 {%- endif %}
