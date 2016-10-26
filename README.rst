@@ -41,10 +41,10 @@ Nagios UI configrations
 .. code-block:: yaml
 
     nagios:
-      server:
+      ui:
         enabled: true
-        ui_username: nagiosadmin
-        ui_password: secret
+        username: nagiosadmin
+        password: secret
 
 Read more
 =========

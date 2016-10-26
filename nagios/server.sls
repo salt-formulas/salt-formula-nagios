@@ -1,13 +1,14 @@
 {%- from "nagios/map.jinja" import server with context %}
+{%- from "nagios/map.jinja" import ui with context %}
 {%- if server.enabled %}
 nagios-server-package:
   pkg.installed:
     - name: {{ server.package}}
 
-{% if server.cgi_package %}
+{% if ui.package %}
 nagios-cgi-server-package:
   pkg.installed:
-    - name: {{ server.cgi_package}}
+    - name: {{ ui.package}}
 {% endif %}
 
 nagios-service:
@@ -19,15 +20,15 @@ nagios-service:
 
 nagios-cgi-username:
   webutil.user_exists:
-    - name: {{ server.ui_username }}
-    - password: {{ server.ui_password }}
-    - htpasswd_file: {{ server.ui_htpasswd_file }}
+    - name: {{ ui.username }}
+    - password: {{ ui.password }}
+    - htpasswd_file: {{ ui.htpasswd_file }}
     - options: d
     - force: true
 
 nagios-cgi-config:
   file.managed:
-    - name: {{ server.cgi_conf }}
+    - name: {{ ui.cgi_conf }}
     - source: salt://nagios/files/cgi.cfg
     - template: jinja
     - require:

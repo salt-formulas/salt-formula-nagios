@@ -6,8 +6,6 @@ parameters:
   nagios:
     server:
       enabled: true
-      ui_username: nagiosadmin
-      ui_password: r00tme
       check_external_commands: 1
       command_check_interval: 15s
       log_external_commands: 1
@@ -21,3 +19,7 @@ parameters:
       process_performance_data: 0
       check_service_freshness: 1
       check_host_freshness: 0
+    ui:
+      enabled: true
+      username: nagiosadmin
+      password: r00tme

@@ -1,7 +1,28 @@
-{% set server = salt['grains.filter_by']({
+{% set ui = salt['grains.filter_by']({
     'Debian': {
         'cgi_conf': '/etc/nagios3/cgi.cfg',
         'url_html_path': '/nagios3',
+        'package': 'nagios3-cgi',
+        'htpasswd_file': '/etc/nagios3/htpasswd.users',
+        'physical_html_path': '/usr/share/nagios3/htdocs',
+        'nagios_check_command': '/usr/lib/nagios/plugins/check_nagios /var/cache/nagios3/status.dat 5 \'/usr/sbin/nagios3\'',
+        'username': 'nagiosadmin',
+        'password': 'nagios',
+    },
+    'RedHat': {
+        'cgi_conf': '/etc/nagios/cgi.cfg',
+        'url_html_path': '/nagios3',
+        'package': None,
+        'htpasswd_file': '/etc/nagios/htpasswd.users',
+        'physical_html_path': '/usr/share/nagios/html',
+        'nagios_check_command': '/usr/lib64/nagios/plugins/check_nagios -F /var/log/nagios/status.dat -e 5 -C /usr/sbin/nagios',
+        'username': 'nagiosadmin',
+        'password': 'nagios',
+    },
+}, merge=salt['pillar.get']('nagios:ui')) %}
+
+{% set server = salt['grains.filter_by']({
+    'Debian': {
         'check_result_path': '/var/lib/nagios3/spool/checkresults',
         'command_file': '/var/lib/nagios3/rw/nagios.cmd',
         'conf': '/etc/nagios3/nagios.cfg',
@@ -23,13 +44,8 @@
         'state_retention_file': '/var/lib/nagios3/retention.dat',
         'status_file': '/var/cache/nagios3/status.dat',
         'temp_file': '/var/cache/nagios3/nagios.tmp',
-        'ui_htpasswd_file': '/etc/nagios3/htpasswd.users',
-        'ui_username': 'nagiosadmin',
-        'ui_password': 'nagios',
     },
     'RedHat': {
-        'cgi_conf': '/etc/nagios/cgi.cfg',
-        'url_html_path': '/nagios3',
         'check_result_path': '/var/log/nagios/spool/checkresults',
         'command_file': '/var/spool/nagios/cmd/nagios.cmd',
         'conf': '/etc/nagios/nagios.cfg',
@@ -51,8 +67,5 @@
         'state_retention_file': '/var/log/nagios/retention.dat',
         'status_file': '/var/log/nagios/status.dat',
         'temp_file': '/var/log/nagios/nagios.tmp',
-        'ui_htpasswd_file': '/etc/nagios/htpasswd.users',
-        'ui_username': 'nagiosadmin',
-        'ui_password': 'nagios',
     },
 }, merge=salt['pillar.get']('nagios:server')) %}
