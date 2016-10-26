@@ -5,18 +5,19 @@ nagios-server-package:
   pkg.installed:
     - name: {{ server.package}}
 
-{% if ui.package %}
-nagios-cgi-server-package:
-  pkg.installed:
-    - name: {{ ui.package}}
-{% endif %}
-
 nagios-service:
   service.running:
     - name: {{ server.service }}
     - enable: true
     - require:
       - pkg: nagios-server-package
+
+{% if ui.enabled is defined and ui.enabled %}
+{% if ui.package %}
+nagios-cgi-server-package:
+  pkg.installed:
+    - name: {{ ui.package}}
+{% endif %}
 
 nagios-cgi-username:
   webutil.user_exists:
@@ -37,6 +38,14 @@ nagios-cgi-config:
 {% else %}
       - pkg: nagios-server-package
 {% endif %}
+
+{% else %}
+{% if ui.package %}
+nagios-cgi-server-package:
+  pkg.removed:
+    - name: {{ ui.package}}
+{% endif %}
+{% endif %} {# cgi enabled #}
 
 nagios-server-config:
   file.managed:
