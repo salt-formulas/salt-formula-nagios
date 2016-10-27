@@ -26,6 +26,11 @@ parameters:
         basic_auth:
           username: nagiosadmin
           password: r00tme
+      notification:
+        smtp:
+          auth: false
+          host: 127.0.0.1
+          from: nagios@localhost
       objects:
         contactgroups:
           openstack:

@@ -6,7 +6,7 @@
     - contents: |
         # Managed by SaltStack
         define contact {
-          alias {{ contact.alias }}
+          alias "{{ contact.alias }}"
           contact_name {{ contact.contact_name }}
           contactgroups {{ contact.contactgroups|join(',')}}
           email {{ contact.email}}

@@ -90,4 +90,28 @@ nagios-server-config:
       - service: {{ server.service }}
 {% endfor -%}
 
+{# Configure commands to send notification by SMTP #}
+
+{% if server.additional_packages is iterable %}
+additional packages:
+  pkg.installed:
+    - names: {{ server.additional_packages }}
+{% endif %}
+
+notification_by_smtp_for_services:
+  file.managed:
+    - name: {{ server.objects_cfg_dir}}/cmd-notify-service-smtp.cfg
+    - source: salt://nagios/files/cmd-notify-service-smtp.cfg
+    - template: jinja
+    - watch_in:
+      - service: {{ server.service }}
+
+notification_by_smtp_for_hosts:
+  file.managed:
+    - name: {{ server.objects_cfg_dir}}/cmd-notify-host-smtp.cfg
+    - source: salt://nagios/files/cmd-notify-host-smtp.cfg
+    - template: jinja
+    - watch_in:
+      - service: {{ server.service }}
+
 {%- endif %}
