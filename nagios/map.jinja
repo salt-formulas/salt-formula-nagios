@@ -35,7 +35,12 @@
             'username': 'nagiosadmin',
             'password': 'nagios',
           },
-        }
+        },
+        'objects_cfg_dir': '/etc/nagios3/conf.d',
+        'objects_file_prefix': 'stacklight',
+        'default_host_notification_command': 'notify-service-by-email',
+        'default_service_notification_command': 'notify-host-by-email',
+        'objects': {},
     },
     'RedHat': {
         'check_result_path': '/var/log/nagios/spool/checkresults',
@@ -73,6 +78,11 @@
             'username': 'nagiosadmin',
             'password': 'nagios',
           },
-        }
+        },
+        'objects_cfg_dir': '/etc/nagios3/conf.d',
+        'objects_file_prefix': 'stacklight',
+        'default_host_notification_command': 'notify-service-by-email',
+        'default_service_notification_command': 'notify-host-by-email',
+        'objects': {},
     },
 }, merge=salt['pillar.get']('nagios:server')) %}
