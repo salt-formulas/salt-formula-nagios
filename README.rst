@@ -41,11 +41,13 @@ Nagios UI configrations with HTTP basic authentication
 .. code-block:: yaml
 
     nagios:
-      ui:
+      server:
         enabled: true
-        basic_auth:
-          username: nagiosadmin
-          password: secret
+        ui:
+          enabled: true
+          basic_auth:
+            username: nagiosadmin
+            password: secret
 
 Read more
 =========

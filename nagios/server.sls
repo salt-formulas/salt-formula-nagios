@@ -1,5 +1,4 @@
 {%- from "nagios/map.jinja" import server with context %}
-{%- from "nagios/map.jinja" import ui with context %}
 {%- if server.enabled %}
 nagios-server-package:
   pkg.installed:
@@ -12,30 +11,30 @@ nagios-service:
     - require:
       - pkg: nagios-server-package
 
-{% if ui.enabled is defined and ui.enabled %}
-{% if ui.package %}
+{% if server.ui.enabled is defined and server.ui.enabled %}
+{% if server.ui.package %}
 nagios-cgi-server-package:
   pkg.installed:
-    - name: {{ ui.package}}
+    - name: {{ server.ui.package}}
 {% endif %}
 
-{% if ui.basic_auth is defined and ui.basic_auth.password is defined %}
+{% if server.ui.basic_auth is defined and server.ui.basic_auth.password is defined %}
 nagios-cgi-username:
   webutil.user_exists:
-    - name: {{ ui.basic_auth.get('username', 'nagiosadmin') }}
-    - password: {{ ui.basic_auth.password }}
-    - htpasswd_file: {{ ui.htpasswd_file }}
+    - name: {{ server.ui.basic_auth.get('username', 'nagiosadmin') }}
+    - password: {{ server.ui.basic_auth.password }}
+    - htpasswd_file: {{ server.ui.htpasswd_file }}
     - options: d
     - force: true
 {% else %}
 remove-basic_htpasswd_file:
   file.absent:
-    - name: {{ ui.htpasswd_file }}
+    - name: {{ server.ui.htpasswd_file }}
 {% endif %}
 
 nagios-cgi-config:
   file.managed:
-    - name: {{ ui.cgi_conf }}
+    - name: {{ server.ui.cgi_conf }}
     - source: salt://nagios/files/cgi.cfg
     - template: jinja
     - require:
@@ -48,24 +47,24 @@ nagios-cgi-config:
 {# Apache2 is installed by dependency, just configure it! #}
 apache_services:
   service.running:
-  - name: {{ ui.apache_service }}
+  - name: {{ server.ui.apache_service }}
   - enable: true
   - watch:
     - file: nagios_apache_config
 
 nagios_apache_config:
  file.managed:
- - name: {{ ui.apache_config }}
+ - name: {{ server.ui.apache_config }}
  - source: salt://nagios/files/nagios.conf.{{ grains.os_family }}
  - template: jinja
  - mode: 644
  - user: root
  - group: root
 
-{% else %} {% if ui.package %}
+{% else %} {% if server.ui.package %}
 remove-nagios-cgi-server-package:
   pkg.removed:
-    - name: {{ ui.package}}
+    - name: {{ server.ui.package}}
 {% endif %}
 {% endif %} {# ui enabled #}
 
