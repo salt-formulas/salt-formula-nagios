@@ -4,5 +4,6 @@ include:
 - nagios.server
 - nagios.contactgroups
 - nagios.contacts
+- nagios.hosts
 {%- endif %}
 {%- endif %}
