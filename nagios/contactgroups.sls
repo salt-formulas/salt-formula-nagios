@@ -1,4 +1,5 @@
 {%- from "nagios/map.jinja" import server with context %}
+{% if server.objects.contactgroups is mapping %}
 nagios contactgroup definitions:
   file.managed:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
@@ -13,4 +14,10 @@ nagios contactgroup definitions:
 
     - watch_in:
       - service: {{ server.service }}
-
+{% else %}
+purge nagios contactgroup definitions:
+  file.absent:
+    - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
+    - watch_in:
+      - service: {{ server.service }}
+{% endif %}
