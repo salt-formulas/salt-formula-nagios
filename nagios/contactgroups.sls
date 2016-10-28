@@ -1,5 +1,5 @@
 {%- from "nagios/map.jinja" import server with context %}
-{% if server.objects.contactgroups is mapping %}
+{% if server.objects.contactgroups is mapping and server.objects.contactgroups.items()|length > 0 %}
 nagios contactgroup definitions:
   file.managed:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
