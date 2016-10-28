@@ -1,13 +1,14 @@
 {%- from "nagios/map.jinja" import server with context %}
-{% for contact_id, contact in server.objects.get('contacts', {}).items() %}
-{{ contact_id }} contact definition:
+nagios contact definitions:
   file.managed:
-    - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contact_{{ contact_id }}.cfg
+    - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contacts.cfg
     - contents: |
         # Managed by SaltStack
+{% for contact_id, contact in server.objects.get('contacts', {}).items() %}
+        # {{ contact_id }}
         define contact {
           alias "{{ contact.alias }}"
-          contact_name {{ contact.contact_name }}
+          contact_name {{ contact.get('contact_name', contact_id) }}
           contactgroups {{ contact.contactgroups|join(',')}}
           email {{ contact.email}}
           host_notification_commands {{ contact.get('host_notification_commands', server.default_host_notification_command) }}
@@ -19,8 +20,8 @@
           service_notification_period {{ contact.get('service_notification_period', '24x7') }}
           service_notifications_enabled {{ contact.get('service_notifications_enabled', 1) }}
         }
+{% endfor %}
 
     - watch_in:
       - service: {{ server.service }}
 
-{% endfor %}
