@@ -1,7 +1,18 @@
 {%- from "nagios/map.jinja" import server with context %}
 {%- if server.enabled %}
 
-{%- set hostgroups = server.objects.get('hostgroups', {}) %}
+{%- set hostgroups = {} %} {# = server.objects.get('hostgroups', {}) %}#}
+
+{%- set static_hostgroups = server.objects.get('hostgroups', {}) %}
+{% for hg_id, hg in static_hostgroups.items() %}
+  {% if hg.get('members', False) %}
+    {% if hg.members is string %}
+      {% do hostgroups.update({hg.get('name', hg_id): [hg.members]})%}
+    {% elif hg.members is iterable %}
+      {% do hostgroups.update({hg.get('name', hg_id): hg.members})%}
+    {% endif %}
+  {% endif %}
+{% endfor %}
 
 {% if server.dynamic is mapping and server.dynamic.enabled %}
 {% if server.dynamic.hostgroups is mapping and server.dynamic.hostgroups.items()|length > 0 %}
