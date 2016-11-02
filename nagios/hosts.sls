@@ -71,18 +71,6 @@ Nagios hostgroups confiugrations:
 }
 )
 %}
-{{ dyn_host }} {{ host_name }} foo debug:
-  file.managed:
-    - name: /tmp/debug.{{ dyn_host}}.{{host_name}}
-    - template: jinja
-    - user: root
-    - mode: 644
-    - contents: |
-        {{ conf }}
-        {{ grains['nodename'] }}
-        {{ grains['ip_interfaces'] }}
-        {{ host_name }}
-
 {% endfor %}
 {% endfor %}
 
