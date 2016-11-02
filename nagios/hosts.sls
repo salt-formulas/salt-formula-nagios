@@ -51,7 +51,7 @@ Nagios hostgroups confiugrations:
 
 {% for dyn_host, conf in server.dynamic.hosts.items() %}
 
-{%- for host_name, grains in salt['mine.get']('*', 'grains.items').items() %}
+{% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
 {% set interface_name = [] %}
 
