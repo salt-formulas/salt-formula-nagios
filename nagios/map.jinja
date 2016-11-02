@@ -1,6 +1,7 @@
 {% set server = salt['grains.filter_by']({
     'Debian': {
         'check_result_path': '/var/lib/nagios3/spool/checkresults',
+        'command_dir': '/var/lib/nagios3/rw',
         'command_file': '/var/lib/nagios3/rw/nagios.cmd',
         'conf': '/etc/nagios3/nagios.cfg',
         'cfg_dir': ['/etc/nagios3/conf.d', '/etc/nagios-plugins/config'],
@@ -28,6 +29,7 @@
           'htpasswd_file': '/etc/nagios3/htpasswd.users',
           'physical_html_path': '/usr/share/nagios3/htdocs',
           'apache_service': 'apache2',
+          'apache_user': 'www-data',
           'apache_config': '/etc/nagios3/apache2.conf',
           'apache_log_dir': '/var/log/apache2/',
           'nagios_check_command': '/usr/lib/nagios/plugins/check_nagios /var/cache/nagios3/status.dat 5 \'/usr/sbin/nagios3\'',
@@ -49,6 +51,7 @@
     },
     'RedHat': {
         'check_result_path': '/var/log/nagios/spool/checkresults',
+        'command_dir': '/var/spool/nagios/cmd',
         'command_file': '/var/spool/nagios/cmd/nagios.cmd',
         'conf': '/etc/nagios/nagios.cfg',
         'cfg_dir': ['/etc/nagios/conf.d', '/etc/nagios-plugins/config'],
@@ -76,6 +79,7 @@
           'htpasswd_file': '/etc/nagios/htpasswd.users',
           'physical_html_path': '/usr/share/nagios/html',
           'apache_service': 'httpd',
+          'apache_user': 'httpd',
           'apache_config': '/etc/nagios/apache2.conf',
           'apache_log_dir': '/var/log/httpd/',
           'nagios_check_command': '/usr/lib64/nagios/plugins/check_nagios -F /var/log/nagios/status.dat -e 5 -C /usr/sbin/nagios',

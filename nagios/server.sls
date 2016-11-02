@@ -76,6 +76,36 @@ nagios-server-config:
     - watch_in:
       - service: {{ server.service }}
 
+{% if salt['grains.get']('os_family') == 'Debian' %}
+{#
+Fix a permission issue with Ubuntu to allow using external commands
+through the web UI
+#}
+
+{{ server.ui.apache_user }}:
+  user.present:
+    - optional_groups:
+      - nagios
+    - remove_groups: False
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+{{ server.command_dir }}:
+  file.directory:
+    - user: nagios
+    - group: {{ server.ui.apache_user }}
+    - dir_mode: 0760
+    - file_mode: 0760
+    - recurse:
+      - user
+      - group
+      - mode
+    - require:
+      - pkg: nagios-server-package
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+      - service: {{ server.service }}
+{% endif %}
 {% for cfg_dir in server.get('cfg_dir', []) -%}
 {{cfg_dir}} config nagios dir:
   file.directory:
