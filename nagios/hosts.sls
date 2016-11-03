@@ -61,6 +61,7 @@ Nagios hostgroups confiugrations:
 {% endif %}
 {% endfor %}
 
+{% if interface_name|length > 0 %}
 {% do hosts.update({
   grains['nodename']: {
     'host_name': grains['nodename'],
@@ -71,6 +72,7 @@ Nagios hostgroups confiugrations:
 }
 )
 %}
+{% endif %}
 {% endfor %}
 {% endfor %}
 
