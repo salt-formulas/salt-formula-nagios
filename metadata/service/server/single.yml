@@ -31,6 +31,8 @@ parameters:
           auth: false
           host: 127.0.0.1
           from: nagios@localhost
+          host_command_name: notify-host-by-smtp
+          service_command_name: notify-service-by-smtp
       dynamic:
         enabled: true
         hostgroups:
@@ -88,8 +90,8 @@ parameters:
             host_notifications_enabled: 1
             host_notification_period: 24x7
             host_notification_options: 'd,r'
-            #host_notification_commands: use default email notification
+            host_notification_commands: notify-host-by-smtp
             service_notifications_enabled: 1
             service_notification_period: 24x7
             service_notification_options: 'w,u,c,r'
-            #service_notification_commands: use default email notification
+            service_notification_commands: notify-service-by-smtp
