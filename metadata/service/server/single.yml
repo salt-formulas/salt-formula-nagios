@@ -60,6 +60,10 @@ parameters:
             - ens3
 
       objects:
+        commands:
+          check_http_InfluxDB:
+            command_line: "check_http -4 -I '$ARG1$' -w 2 -c 3 -t 5 -p $ARG2$ -u '/ping' -e '204 No Content'  -d 'X-Influxdb-Version'"
+
         hosts:
           generic_host_tpl:
             #name: generic_host_tpl

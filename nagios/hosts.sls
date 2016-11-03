@@ -3,7 +3,7 @@
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
 
-{%- set hostgroups = {} %} {# = server.objects.get('hostgroups', {}) %}#}
+{%- set hostgroups = {} %}
 
 {%- set static_hostgroups = server.objects.get('hostgroups', {}) %}
 {% for hg_id, hg in static_hostgroups.items() %}
@@ -29,7 +29,7 @@
 {% endif %}
 
 {% if hostgroups.keys()|length > 0 %}
-Nagios hostgroups confiugrations:
+Nagios hostgroups configurations:
   file.managed:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.hostgroups.cfg
     - template: jinja
