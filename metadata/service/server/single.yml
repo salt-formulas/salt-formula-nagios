@@ -35,6 +35,7 @@ parameters:
           service_command_name: notify-service-by-smtp
       dynamic:
         enabled: true
+        grain_hostname: 'nodename'
         hostgroups:
           - grain_match: '*'
             name: OpenStack

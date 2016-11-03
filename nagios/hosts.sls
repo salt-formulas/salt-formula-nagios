@@ -1,6 +1,8 @@
 {%- from "nagios/map.jinja" import server with context %}
 {%- if server.enabled %}
 
+{% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
+
 {%- set hostgroups = {} %} {# = server.objects.get('hostgroups', {}) %}#}
 
 {%- set static_hostgroups = server.objects.get('hostgroups', {}) %}
@@ -21,7 +23,7 @@
   {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
 {% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
-{% do hostgroups[conf.name].append(grains['nodename']) %}
+{% do hostgroups[conf.name].append(grains[grain_hostname]) %}
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -63,8 +65,8 @@ Nagios hostgroups confiugrations:
 
 {% if interface_name|length > 0 %}
 {% do hosts.update({
-  grains['nodename']: {
-    'host_name': grains['nodename'],
+  grains[grain_hostname]: {
+    'host_name': grains[grain_hostname],
     'address': grains['ip_interfaces'][interface_name[0]][0],
     'contact_groups': conf.get('contact_groups', None),
     'use': conf.get('use', server.default_host_template),
