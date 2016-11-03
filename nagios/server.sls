@@ -94,12 +94,7 @@ through the web UI
   file.directory:
     - user: nagios
     - group: {{ server.ui.apache_user }}
-    - dir_mode: 0760
-    - file_mode: 0760
-    - recurse:
-      - user
-      - group
-      - mode
+    - dir_mode: 0750
     - require:
       - pkg: nagios-server-package
     - watch_in:
