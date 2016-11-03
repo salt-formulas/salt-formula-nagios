@@ -51,28 +51,34 @@ Nagios hostgroups configurations:
 
 {% if server.dynamic.hosts is iterable and server.dynamic.hosts|length > 0 %}
 
+{% set interface_names = {} %}
 {% for conf in server.dynamic.hosts %}
 
-{% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
-
-{% set interface_name = [] %}
+{% for host_name, h_grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
 {% for nic in conf.get('interface', ['eth0']) %}
-{% if nic in grains['ip_interfaces'] %}
-    {% do interface_name.append(nic) %}
+{% if nic in h_grains['ip_interfaces'] %}
+    {% if host_name not in interface_names %}
+      {% do interface_names.update({host_name: []}) %}
+    {% endif %}
+    {% do interface_names[host_name].append(nic) %}
 {% endif %}
 {% endfor %}
 
-{% if interface_name|length > 0 %}
-{% do hosts.update({
-  grains[grain_hostname]: {
-    'host_name': grains[grain_hostname],
-    'address': grains['ip_interfaces'][interface_name[0]][0],
-    'contact_groups': conf.get('contact_groups', None),
-    'use': conf.get('use', server.default_host_template),
-  }
-}
-)
+{% if interface_names[host_name]|length > 0 %}
+
+{% do salt['grains.filter_by']({'default': hosts},
+  merge={
+    h_grains[grain_hostname]: {
+      'address': h_grains['ip_interfaces'][interface_names[host_name][0]][0],
+      'host_name': h_grains[grain_hostname]
+    }
+  })
+%}
+{% do salt['grains.filter_by']({'default': hosts},
+  merge={
+    h_grains[grain_hostname]: conf,
+  })
 %}
 {% endif %}
 {% endfor %}

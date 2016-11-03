@@ -6,5 +6,6 @@ include:
 - nagios.contacts
 - nagios.hosts
 - nagios.commands
+- nagios.services
 {%- endif %}
 {%- endif %}
