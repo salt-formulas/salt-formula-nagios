@@ -15,13 +15,13 @@
 {% endfor %}
 
 {% if server.dynamic is mapping and server.dynamic.enabled %}
-{% if server.dynamic.hostgroups is mapping and server.dynamic.hostgroups.items()|length > 0 %}
-{% for dyn_host, conf in server.dynamic.hostgroups.items() %}
-{% if dyn_host not in hostgroups %}
-  {% do hostgroups.update({conf.get('name', dyn_host): []}) %}
+{% if server.dynamic.hostgroups is iterable and server.dynamic.hostgroups|length > 0 %}
+{% for conf in server.dynamic.hostgroups %}
+{% if conf.name not in hostgroups %}
+  {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
 {% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
-{% do hostgroups[conf.get('name', dyn_host)].append(grains['nodename']) %}
+{% do hostgroups[conf.name].append(grains['nodename']) %}
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -47,9 +47,9 @@ Nagios hostgroups confiugrations:
 {# configure user definied hosts #}
 {%- set hosts = server.objects.get('hosts', {}) %}
 
-{% if server.dynamic.hosts is mapping and server.dynamic.hosts.items()|length > 0 %}
+{% if server.dynamic.hosts is iterable and server.dynamic.hosts|length > 0 %}
 
-{% for dyn_host, conf in server.dynamic.hosts.items() %}
+{% for conf in server.dynamic.hosts %}
 
 {% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 

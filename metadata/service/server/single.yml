@@ -34,38 +34,32 @@ parameters:
       dynamic:
         enabled: true
         hostgroups:
-            openstack:
-              grain_match: '*'
-              name: OpenStack
-            nova_controller:
-              grain_match: 'G@roles:nova.controller'
-              #expr_from: compound
-              name: Nova Controller
-            compute:
-              grain_match: 'G@roles:nova.compute'
-              name: Nova Compute
-            keystone:
-              grain_match: 'G@roles:keystone.server'
-              name: Keystone server
-            influxdb:
-              grain_match: 'G@roles:influxdb.server'
-              name: InfluxDB server
-            elasticsearch:
-              grain_match: 'G@roles:elasticsearch.server'
-              name: Elasticsearchserver
-
+          - grain_match: '*'
+            name: OpenStack
+            expr_from: glob
+          - grain_match: 'G@roles:nova.controller'
+            expr_from: compound # the default
+            name: Nova Controller
+          - grain_match: 'G@roles:nova.compute'
+            name: Nova Compute
+          - grain_match: 'G@roles:keystone.server'
+            name: Keystone server
+          - grain_match: 'G@roles:influxdb.server'
+            name: InfluxDB server
+          - grain_match: 'G@roles:elasticsearch.server'
+            name: Elasticsearchserver
         hosts:
-          openstack_env:
-            grain_match: 'G@services:openssh'
+          - grain_match: 'G@services:openssh'
             contact_groups: OpenStack
             use: generic_host_tpl
             interface:
-              - eth0
-              - ens3
+            - eth0
+            - ens3
+
       objects:
         hosts:
           generic_host_tpl:
-            name: generic_host_tpl
+            #name: generic_host_tpl
             notifications_enabled: 1
             event_handler_enabled: 1
             flap_detection_enabled: 1
