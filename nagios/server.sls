@@ -115,6 +115,14 @@ through the web UI
       - service: {{ server.service }}
 {% endfor -%}
 
+{% for to_purge in server.get('configs_to_purge', []) %}
+purge {{ to_purge }}:
+  file.absent:
+    - name: {{ to_purge }}
+    - watch_in:
+      - service: {{ server.service }}
+{% endfor %}
+
 {# Configure commands to send notification by SMTP #}
 
 {% if server.additional_packages is iterable %}
