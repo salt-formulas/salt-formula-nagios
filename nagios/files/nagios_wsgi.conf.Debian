@@ -1,0 +1,33 @@
+# ************************************
+# Vhost template in nagios formula
+# Managed by SaltStack
+# ************************************
+{%- from "nagios/map.jinja" import server with context %}
+
+<VirtualHost {{ server.ui.wsgi.bind }}:{{ server.ui.wsgi.port }}>
+  ServerName nagios-status
+
+  # Disable directory indexes
+  Options -Indexes
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
+
+
+  # WSGI implementation for the process_service_check command
+  SetEnv NAGIOS_CMD_FILE {{ server.command_file }}
+  WSGIScriptAlias {{ server.ui.wsgi.location }} {{ server.ui.wsgi.script_path }}
+  WSGIDaemonProcess nagios_process_service_checks user=nagios group=nagios processes=2 threads=15 display-name='%{GROUP}' maximum-requests=10000
+  WSGIProcessGroup nagios_process_service_checks
+  <Location {{ server.ui.wsgi.location }}>
+     AuthName "Nagios Access"
+     AuthType Basic
+     AuthUserFile {{ server.ui.htpasswd_file }}
+     require valid-user
+  </Location>
+
+  ErrorLog "{{ server.ui.apache_log_dir }}/nagios_wsgi_error.log"
+  ServerSignature Off
+  CustomLog "{{ server.ui.apache_log_dir }}/nagios_wsgi_access.log" combined
+</VirtualHost>

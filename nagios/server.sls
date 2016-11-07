@@ -61,6 +61,72 @@ nagios_apache_config:
  - user: root
  - group: root
 
+nagios_apache_wsgi_config:
+  file.managed:
+    - name: {{ server.ui.wsgi.apache_conf_dir }}/nagios_wsgi.conf
+    - template: jinja
+    - mode: 644
+    - user: root
+    - group: root
+    - contents: |
+        Listen {{ server.ui.wsgi.port }}
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+{{ server.ui.wsgi.script_path }}:
+  file.managed:
+    - source: salt://nagios/files/process-service-checks.wsgi
+    - user: nagios
+    - group: nagios
+    - mode: 555
+
+nagios_apache_wsgi_site:
+  file.managed:
+    - name: {{ server.ui.wsgi.apache_sites_dir }}/nagios_wsgi.conf
+    - source: salt://nagios/files/nagios_wsgi.conf.{{ grains.os_family }}
+    - template: jinja
+    - mode: 644
+    - user: root
+    - group: root
+    - require:
+      - file: {{ server.ui.wsgi.script_path }}
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+wsgi_pkg:
+  pkg.installed:
+    - names: {{ server.ui.wsgi.pkg }}
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+enable_apache_wsgi_module:
+  apache_module.enable:
+    - name: wsgi
+    - require:
+      - pkg: wsgi_pkg
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+enable Nagios WSGI conf:
+  apache_conf.enable:
+    - name: nagios_wsgi
+    - require:
+      - file: nagios_apache_wsgi_config
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+enable Nagios WSGI app:
+  apache_site.enable:
+    - name: nagios_wsgi
+    - require:
+      - apache_module: enable_apache_wsgi_module
+      - apache_conf: enable Nagios WSGI conf
+      - file: nagios_apache_wsgi_site
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+
+{%- endif %}
+
 {% else %} {% if server.ui.package %}
 remove-nagios-cgi-server-package:
   pkg.removed:
@@ -146,5 +212,3 @@ notification_by_smtp_for_hosts:
     - template: jinja
     - watch_in:
       - service: {{ server.service }}
-
-{%- endif %}
