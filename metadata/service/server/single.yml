@@ -38,7 +38,7 @@ parameters:
         grain_hostname: 'nodename'
         hostgroups:
           - grain_match: '*'
-            name: OpenStack
+            name: All
             expr_from: glob
           - grain_match: 'G@roles:nova.controller'
             expr_from: compound # the default
@@ -53,20 +53,28 @@ parameters:
             name: Elasticsearchserver
         hosts:
           - grain_match: 'G@services:openssh'
-            contact_groups: OpenStack
+            contact_groups: Operator
             use: generic_host_tpl
             interface:
             - eth0
             - ens3
+        services:
+          - grain_match: 'G@roles:openssh.server'
+            name: SSH
+            use: generic_service_tpl
+            check_command: check_ssh
+          - grain_match: 'G@roles:nagios.server'
+            name: HTTP Nagios
+            use: generic_service_tpl
+            check_command: check_http_basic_auth!localhost!${nagios:server:ui:port}
 
       objects:
         commands:
-          check_http_InfluxDB:
-            command_line: "check_http -4 -I '$ARG1$' -w 2 -c 3 -t 5 -p $ARG2$ -u '/ping' -e '204 No Content'  -d 'X-Influxdb-Version'"
+          check_http_basic_auth:
+            command_line: "check_http -4 -I '$ARG1$' -w 2 -c 3 -t 5 -p $ARG2$ -u '/' -e '401 Unauthorized'"
 
         hosts:
           generic_host_tpl:
-            #name: generic_host_tpl
             notifications_enabled: 1
             event_handler_enabled: 1
             flap_detection_enabled: 1
@@ -74,23 +82,22 @@ parameters:
             process_perf_data: 0
             retain_status_information: 1
             retain_nonstatus_information: 1
-            #check_command: use default command per default
             max_check_attempts: 10
             notification_interval: 0
             notification_period: 24x7
             notification_options: d,u,r
-            contact_groups: OpenStack
+            contact_groups: Operator
             register: 0
 
         contactgroups:
-          openstack:
-            contactgroup_name: OpenStack
+          operator:
+            contactgroup_name: Operator
         contacts:
-          openstack:
+          operator:
             alias: 'root_at_localhost'
-            contact_name: OpenStack
+            contact_name: Operator
             contactgroups:
-                - OpenStack
+                - Operator
             email: 'root@localhost'
             host_notifications_enabled: 1
             host_notification_period: 24x7
@@ -100,3 +107,9 @@ parameters:
             service_notification_period: 24x7
             service_notification_options: 'w,u,c,r'
             service_notification_commands: notify-service-by-smtp
+        services:
+          generic_service_tpl:
+            register: 0
+            contact_groups: Operator
+            process_perf_data: 0
+            max_check_attempts: 3
