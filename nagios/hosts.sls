@@ -22,7 +22,7 @@
 {% if conf.name not in hostgroups %}
   {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
-{% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
+{% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 {% do hostgroups[conf.name].append(grains[grain_hostname]) %}
 {% endfor %}
 {% endfor %}
@@ -54,7 +54,7 @@ Nagios hostgroups configurations:
 {% set interface_names = {} %}
 {% for conf in server.dynamic.hosts %}
 
-{% for host_name, h_grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
+{% for host_name, h_grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
 {% for nic in conf.get('interface', ['eth0']) %}
 {% if nic in h_grains['ip_interfaces'] %}

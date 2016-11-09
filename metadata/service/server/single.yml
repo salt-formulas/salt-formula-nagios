@@ -37,33 +37,33 @@ parameters:
         enabled: true
         grain_hostname: 'nodename'
         hostgroups:
-          - grain_match: '*'
+          - target: '*'
             name: All
             expr_from: glob
-          - grain_match: 'G@roles:nova.controller'
+          - target: 'G@roles:nova.controller'
             expr_from: compound # the default
             name: Nova Controller
-          - grain_match: 'G@roles:nova.compute'
+          - target: 'G@roles:nova.compute'
             name: Nova Compute
-          - grain_match: 'G@roles:keystone.server'
+          - target: 'G@roles:keystone.server'
             name: Keystone server
-          - grain_match: 'G@roles:influxdb.server'
+          - target: 'G@roles:influxdb.server'
             name: InfluxDB server
-          - grain_match: 'G@roles:elasticsearch.server'
+          - target: 'G@roles:elasticsearch.server'
             name: Elasticsearchserver
         hosts:
-          - grain_match: 'G@services:openssh'
+          - target: 'G@services:openssh'
             contact_groups: Operator
             use: generic_host_tpl
             interface:
             - eth0
             - ens3
         services:
-          - grain_match: 'G@roles:openssh.server'
+          - target: 'G@roles:openssh.server'
             name: SSH
             use: generic_service_tpl
             check_command: check_ssh
-          - grain_match: 'G@roles:nagios.server'
+          - target: 'G@roles:nagios.server'
             name: HTTP Nagios
             use: generic_service_tpl
             check_command: check_http_basic_auth!localhost!${nagios:server:ui:port}

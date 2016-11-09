@@ -9,7 +9,7 @@
 
 {% for conf in server.dynamic.services %}
 {% set rowloop = loop %}
-{% for host_name, grains in salt['mine.get'](conf.get('grain_match', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
+{% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
 {% set name = conf.get('service_description', conf.get('name', '{}_check_{}'.format(host_name, rowloop.index))) %}
 {% do salt['grains.filter_by']({'default': services},
