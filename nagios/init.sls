@@ -7,5 +7,6 @@ include:
 - nagios.hosts
 - nagios.commands
 - nagios.services
+- nagios.alarms
 {%- endif %}
 {%- endif %}
