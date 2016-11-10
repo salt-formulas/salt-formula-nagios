@@ -68,16 +68,24 @@ referenced in the `contact` objects.
           from: nagios@localhost
           username: foo
           password: secret
+
+Nagios objects can be defined in pillar:
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
       objects:
         contactgroups:
           group1:
-            contactgroup_name: MyGroup
+            contactgroup_name: Operator
         contacts:
           contact1:
             alias: 'root_at_localhost'
             contact_name: Me
             contactgroups:
-                - MyGroup
+                - Operator
             email: 'root@localhost'
             host_notifications_enabled: 1
             host_notification_period: 24x7
@@ -87,9 +95,92 @@ referenced in the `contact` objects.
             service_notification_period: 24x7
             service_notification_options: 'w,u,c,r'
             service_notification_commands: notify-service-by-smtp
+        commands:
+          check_http_basic_auth:
+            command_line: "check_http -4 -I '$ARG1$' -w 2 -c 3 -t 5 -p $ARG2$ -u '/' -e '401 Unauthorized'"
+
+        services:
+          generic_service_tpl:
+            register: 0
+            contact_groups: Operator
+            process_perf_data: 0
+            max_check_attempts: 3
+        hosts:
+          generic_host_tpl:
+            notifications_enabled: 1
+            event_handler_enabled: 1
+            flap_detection_enabled: 1
+            failure_prediction_enabled: 1
+            process_perf_data: 0
+            retain_status_information: 1
+            retain_nonstatus_information: 1
+            max_check_attempts: 10
+            notification_interval: 0
+            notification_period: 24x7
+            notification_options: d,u,r
+            contact_groups: Operator
+            register: 0
+
+Also, **hostgroups**, **hosts** and **services** can be created dynamically using
+**mine**:
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+      dynamic:
+        enabled: true
+        grain_hostname: 'host'
+        hostgroups:
+          - target: '*'
+            name: All
+            expr_from: glob
+          - target: 'G@roles:nova.controller'
+            expr_from: compound # the default
+            name: Nova Controller
+          - target: 'G@roles:nova.compute'
+            name: Nova Compute
+          - target: 'G@roles:keystone.server'
+            name: Keystone server
+          - target: 'G@roles:influxdb.server'
+            name: InfluxDB server
+          - target: 'G@roles:elasticsearch.server'
+            name: Elasticsearchserver
+        hosts:
+          - target: 'G@services:openssh'
+            contact_groups: Operator
+            use: generic_host_tpl
+            interface:
+            - eth0
+            - ens3
+        services:
+          - target: 'G@roles:openssh.server'
+            name: SSH
+            use: generic_service_tpl
+            check_command: check_ssh
+          - target: 'G@roles:nagios.server'
+            name: HTTP Nagios
+            use: generic_service_tpl
+            check_command: check_http_basic_auth!localhost!${nagios:server:ui:port}
 
 
 Read more
 =========
 
 * https://www.nagios.org
+
+Plateforme support
+=================
+
+This formula has been tested on Ubuntu Xenial **only**.
+
+TODO
+====
+
+* Find a more suitable way to configure IP address for **dynamic hosts** creation.
+  Currently, a list of `NIC interfaces` is provided and the state picks the first
+  IP address of the first interface found.
+  This is to support both Linux kernel version which uses different interface names.
+* Configure Apache using salt-formula-apache (using service metadata) or alternatively
+  using Nginx.
