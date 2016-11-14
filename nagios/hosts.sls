@@ -1,5 +1,7 @@
 {%- from "nagios/map.jinja" import server with context %}
 {%- if server.enabled %}
+include:
+- nagios.server
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
 

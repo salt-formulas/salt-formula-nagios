@@ -1,5 +1,9 @@
 {%- from "nagios/map.jinja" import server with context %}
+{%- if server.enabled %}
 {% if server.objects.contactgroups is mapping and server.objects.contactgroups.items()|length > 0 %}
+include:
+- nagios.server
+
 nagios contactgroup definitions:
   file.managed:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
@@ -20,4 +24,5 @@ purge nagios contactgroup definitions:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
     - watch_in:
       - service: {{ server.service }}
+{% endif %}
 {% endif %}
