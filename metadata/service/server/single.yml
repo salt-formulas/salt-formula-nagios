@@ -3,6 +3,15 @@ applications:
 classes:
 - service.nagios.support
 parameters:
+  _param:
+    nagios_password: r00tme
+    nagios_username: nagiosadmin
+    nagios_ui_bind: 0.0.0.0
+    nagios_ui_port: 80
+    nagios_status_bind: 0.0.0.0
+    nagios_status_port: 8001
+    nagios_notification_smtp_server: 127.0.0.1
+    nagios_notification_from: nagios@localhost
   nagios:
     server:
       enabled: true
@@ -21,95 +30,18 @@ parameters:
       check_host_freshness: 0
       ui:
         enabled: true
-        bind: 0.0.0.0
-        port: 80
+        bind: ${_param:nagios_ui_bind}
+        port: ${_param:nagios_ui_port}
         basic_auth:
-          username: nagiosadmin
-          password: r00tme
+          username: ${_param:nagios_password}
+          password: ${_param:nagios_username}
+        wsgi:
+          bind: ${_param:nagios_status_bind}
+          port: ${_param:nagios_status_port}
       notification:
         smtp:
           auth: false
-          host: 127.0.0.1
-          from: nagios@localhost
+          host: ${_param:nagios_notification_smtp_server}
+          from: ${_param:nagios_notification_from}
           host_command_name: notify-host-by-smtp
           service_command_name: notify-service-by-smtp
-      dynamic:
-        enabled: true
-        grain_hostname: 'nodename'
-        hostgroups:
-          - target: '*'
-            name: All
-            expr_from: glob
-          - target: 'G@roles:nova.controller'
-            expr_from: compound # the default
-            name: Nova Controller
-          - target: 'G@roles:nova.compute'
-            name: Nova Compute
-          - target: 'G@roles:keystone.server'
-            name: Keystone server
-          - target: 'G@roles:influxdb.server'
-            name: InfluxDB server
-          - target: 'G@roles:elasticsearch.server'
-            name: Elasticsearchserver
-        hosts:
-          - target: 'G@services:openssh'
-            contact_groups: Operator
-            use: generic_host_tpl
-            interface:
-            - eth0
-            - ens3
-        services:
-          - target: 'G@roles:openssh.server'
-            name: SSH
-            use: generic_service_tpl
-            check_command: check_ssh
-          - target: 'G@roles:nagios.server'
-            name: HTTP Nagios
-            use: generic_service_tpl
-            check_command: check_http_basic_auth!localhost!${nagios:server:ui:port}
-
-      objects:
-        commands:
-          check_http_basic_auth:
-            command_line: "check_http -4 -I '$ARG1$' -w 2 -c 3 -t 5 -p $ARG2$ -u '/' -e '401 Unauthorized'"
-
-        hosts:
-          generic_host_tpl:
-            notifications_enabled: 1
-            event_handler_enabled: 1
-            flap_detection_enabled: 1
-            failure_prediction_enabled: 1
-            process_perf_data: 0
-            retain_status_information: 1
-            retain_nonstatus_information: 1
-            max_check_attempts: 10
-            notification_interval: 0
-            notification_period: 24x7
-            notification_options: d,u,r
-            contact_groups: Operator
-            register: 0
-
-        contactgroups:
-          operator:
-            contactgroup_name: Operator
-        contacts:
-          operator:
-            alias: 'root_at_localhost'
-            contact_name: Operator
-            contactgroups:
-                - Operator
-            email: 'root@localhost'
-            host_notifications_enabled: 1
-            host_notification_period: 24x7
-            host_notification_options: 'd,r'
-            host_notification_commands: notify-host-by-smtp
-            service_notifications_enabled: 1
-            service_notification_period: 24x7
-            service_notification_options: 'w,u,c,r'
-            service_notification_commands: notify-service-by-smtp
-        services:
-          generic_service_tpl:
-            register: 0
-            contact_groups: Operator
-            process_perf_data: 0
-            max_check_attempts: 3
