@@ -181,6 +181,7 @@ through the web UI
       - service: {{ server.service }}
 {% endfor -%}
 
+{% if server.purge_distribution_config is defined and server.purge_distribution_config %}
 {% for to_purge in server.get('configs_to_purge', []) %}
 purge {{ to_purge }}:
   file.absent:
@@ -188,6 +189,7 @@ purge {{ to_purge }}:
     - watch_in:
       - service: {{ server.service }}
 {% endfor %}
+{% endif %}
 
 {# Configure commands to send notification by SMTP #}
 
