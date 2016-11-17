@@ -8,5 +8,6 @@ include:
 - nagios.commands
 - nagios.services
 - nagios.alarms
+- nagios.alarm_clusters
 {%- endif %}
 {%- endif %}

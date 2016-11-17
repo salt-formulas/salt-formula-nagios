@@ -28,6 +28,35 @@ def alarm_to_service(host, alarm_id, alarm, check_command, threshold, default=No
     return {host + alarm_id: service }
 
 
+def alarm_cluster_to_service(host, alarm_id, alarm, check_command, threshold, default=None):
+    """
+    Return a dictinnary representing a Nagios service from an alarm_custer
+    definition.
+    The service properties are enforced to activate passive check and turn on the
+    freshness pattern.
+    """
+    if default is None:
+        default = {}
+
+    notifications_enabled = 1
+    alerting = alarm.get('alerting', 'enabled_with_notification')
+    if alerting != 'enabled_with_notification':
+        notifications_enabled = 0
+
+    service = {
+        'service_description': alarm_id,
+        'host_name': host,
+        'notifications_enabled': notifications_enabled,
+        'freshness_threshold': threshold,
+        'check_command': check_command,
+        'passive_checks_enabled': 1,
+        'active_checks_enabled': 0,
+        'check_freshness': 1,
+    }
+    service.update(default)
+    return {host + alarm_id: service }
+
+
 def threshold(alarm, triggers, delay=10):
     """
     Return the freshness_threshold for a Nagios service based on the maximum
