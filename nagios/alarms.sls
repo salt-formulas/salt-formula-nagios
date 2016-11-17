@@ -50,19 +50,11 @@ Nagios alarm dummy commands configurations:
   file.managed:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarms-commands.cfg
     - template: jinja
+    - source: salt://nagios/files/commands.cfg
     - user: root
     - mode: 644
-    - contents: |
-{% for cmd_id, conf in commands.items() %}
-        define command {
-{% if not conf.command_line[0] == '/' %}
-          command_line {{server.plugin_dir }}/{{ conf.command_line }}
-{% else %}
-          command_line {{ conf.command_line }}
-{% endif %}
-          command_name {{ conf.command_name|default(cmd_id) }}
-        }
-{% endfor %}
+    - defaults:
+      commands: {{ commands }}
     - watch_in:
       - service: {{ server.service }}
 {% endif %}
