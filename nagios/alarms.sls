@@ -1,8 +1,8 @@
 {%- from "nagios/map.jinja" import server with context %}
 {%- if server.enabled %}
-{% if server.dynamic.stacklight_alarms is mapping and server.dynamic.stacklight_alarms.enabled is defined and server.dynamic.stacklight_alarms.enabled %}
 include:
 - nagios.server
+{% if server.dynamic.stacklight_alarms is mapping and server.dynamic.stacklight_alarms.enabled is defined and server.dynamic.stacklight_alarms.enabled %}
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
 {% set alarms = {} %}
@@ -66,5 +66,17 @@ Nagios alarm dummy commands configurations:
     - watch_in:
       - service: {{ server.service }}
 {% endif %}
+{% else %}
+nagios alarm service configurations purge:
+  file.absent:
+    - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarms.cfg
+    - watch_in:
+      - service: {{ server.service }}
+
+Nagios alarm dummy commands configurations purge:
+  file.absent:
+    - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarms-commands.cfg
+    - watch_in:
+      - service: {{ server.service }}
 {% endif %}
 {% endif %}
