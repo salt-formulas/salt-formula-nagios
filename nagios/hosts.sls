@@ -96,7 +96,7 @@ nagios host configurations:
     - user: root
     - mode: 644
     - defaults:
-      hosts: {{ hosts }}
+      hosts: {{ hosts|yaml }}
     - watch_in:
       - service: {{ server.service }}
 {%- endif %}

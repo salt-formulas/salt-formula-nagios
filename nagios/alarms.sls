@@ -41,7 +41,7 @@ nagios alarm service configurations:
     - user: root
     - mode: 644
     - defaults:
-      services: {{ alarms }}
+      services: {{ alarms|yaml }}
     - watch_in:
       - service: {{ server.service }}
 
@@ -54,7 +54,7 @@ Nagios alarm dummy commands configurations:
     - user: root
     - mode: 644
     - defaults:
-      commands: {{ commands }}
+      commands: {{ commands|yaml }}
     - watch_in:
       - service: {{ server.service }}
 {% endif %}

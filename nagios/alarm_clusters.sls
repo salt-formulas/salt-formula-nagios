@@ -47,7 +47,7 @@ Nagios alarm cluster dummy commands configurations:
     - user: root
     - mode: 644
     - defaults:
-      commands: {{ commands }}
+      commands: {{ commands|yaml }}
     - watch_in:
       - service: {{ server.service }}
 
@@ -59,7 +59,7 @@ Nagios alarm cluster service configurations:
     - user: root
     - mode: 644
     - defaults:
-      services: {{ alarms }}
+      services: {{ alarms|yaml }}
     - watch_in:
       - service: {{ server.service }}
 
@@ -71,7 +71,7 @@ Nagios cluster host configurations:
     - user: root
     - mode: 644
     - defaults:
-      hosts: {{ hosts }}
+      hosts: {{ hosts|yaml }}
     - watch_in:
       - service: {{ server.service }}
 

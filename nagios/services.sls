@@ -43,7 +43,7 @@ nagios service configurations:
     - user: root
     - mode: 644
     - defaults:
-      services: {{ services }}
+      services: {{ services|yaml }}
     - watch_in:
       - service: {{ server.service }}
 {%- endif %}
