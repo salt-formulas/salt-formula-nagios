@@ -73,3 +73,15 @@ def threshold(alarm, triggers, delay=10):
                     window = int(rule.get('window'))
 
     return window + delay
+
+
+def alarm_cluster_hostname(dimension_key, alarm, default_hostname):
+    """
+    Return the associated Nagios host_name of an alarm_cluster.
+    """
+
+    for key, value in alarm.get('dimension', {}).items():
+        if key == dimension_key:
+            return value
+
+    return default_hostname

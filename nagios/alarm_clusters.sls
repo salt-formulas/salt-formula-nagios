@@ -4,12 +4,11 @@ include:
 - nagios.server
 {% if server.dynamic.stacklight_alarm_clusters is mapping and server.dynamic.stacklight_alarm_clusters.enabled is defined and server.dynamic.stacklight_alarm_clusters.enabled %}
 
-{% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
 {% set alarms = {} %}
 {% set commands = {} %}
 {% set hosts = {} %}
 
-{% set default_host_alarm_clusters =  grains.get('heka', {}).get('aggregator', {}).get('nagios_host_alarm_clusters', '00-clusters') %}
+{% set default_host =  server.dynamic.stacklight_alarm_clusters.get('default_host', '00-others') %}
 
 {% set check_command = 'check_dummy_unknown_for_stacklight_clusters' %}
 {% set threshold = 60 %}
@@ -17,13 +16,18 @@ include:
 {% do commands.update({check_command: { 'command_line': 'check_dummy 3 "No data received for at least {} seconds"'.format(threshold)}}) %}
 {% do commands.update({'dummy_ok_for_cluster_hosts': { 'command_line': 'check_dummy 0 "OK"'}}) %}
 
+{% set dimension_key = server.dynamic.stacklight_alarm_clusters.get('dimension_key') %}
 
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
 {%- if node_grains.heka is defined and node_grains.heka.aggregator is mapping %}
 
 {% for alarm_id, alarm_def in node_grains.heka.aggregator.get('alarm_cluster', {}).items() %}
 {% if alarm_def.get('alerting', 'enabled_with_notification') != 'disabled' %}
-{% set host_name = alarm_def.host_name|default(default_host_alarm_clusters) %}
+{% set host_name = salt['nagios_alarming.alarm_cluster_hostname'](
+                    dimension_key,
+                    alarm_def,
+                    default_host)
+%}
 
 {% do salt['grains.filter_by']({'default': hosts},
   merge={ host_name: {
