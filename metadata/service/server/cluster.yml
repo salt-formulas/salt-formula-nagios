@@ -3,4 +3,4 @@ classes:
 - service.nagios.support
 parameters:
   _param:
-    nagios_automatic_starting: true
+    nagios_automatic_starting: false

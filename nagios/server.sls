@@ -4,12 +4,20 @@ nagios-server-package:
   pkg.installed:
     - name: {{ server.package}}
 
+{%- if server.automatic_starting %}
 nagios-service:
   service.running:
     - name: {{ server.service }}
     - enable: true
     - require:
       - pkg: nagios-server-package
+{%- else %}
+nagios-service:
+  service.dead:
+    - name: {{ server.service }}
+    - enable: False
+    - sig: "nagios3 -d"
+{% endif %}
 
 {% if server.ui.enabled is defined and server.ui.enabled %}
 {% if server.ui.package %}

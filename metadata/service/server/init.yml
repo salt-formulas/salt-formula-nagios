@@ -1,0 +1,78 @@
+applications:
+- nagios
+classes:
+- service.nagios.support
+parameters:
+  _param:
+    nagios_password: r00tme
+    nagios_username: nagiosadmin
+    nagios_ui_bind: 0.0.0.0
+    nagios_ui_port: 80
+    nagios_status_bind: 0.0.0.0
+    nagios_status_port: 8001
+    nagios_notification_smtp_server: 127.0.0.1
+    nagios_notification_from: nagios@localhost
+    nagios_alarm_cluster_default_host: 00-clusters
+    nagios_host_dimension_key: nagios_host
+    nagios_automatic_starting: true
+  nagios:
+    server:
+      enabled: true
+      automatic_starting: ${_param:nagios_automatic_starting}
+      check_external_commands: 1
+      command_check_interval: 15s
+      log_external_commands: 1
+      log_passive_checks: 1
+      log_rotation_method: d
+      accept_passive_service_checks: 1
+      accept_passive_host_checks: 0
+      enable_notifications: 1
+      execute_service_checks: 1
+      execute_host_checks: 1
+      process_performance_data: 0
+      check_service_freshness: 1
+      check_host_freshness: 0
+      ui:
+        enabled: true
+        bind: ${_param:nagios_ui_bind}
+        port: ${_param:nagios_ui_port}
+        basic_auth:
+          username: ${_param:nagios_password}
+          password: ${_param:nagios_username}
+        wsgi:
+          bind: ${_param:nagios_status_bind}
+          port: ${_param:nagios_status_port}
+      notification:
+        smtp:
+          auth: false
+          host: ${_param:nagios_notification_smtp_server}
+          from: ${_param:nagios_notification_from}
+          host_command_name: notify-host-by-smtp
+          service_command_name: notify-service-by-smtp
+      dynamic:
+        enabled: true
+        grain_hostname: 'host'
+        hostgroups:
+          - target: '*'
+            name: All
+            expr_from: glob
+        hosts:
+          - target: '*'
+            expr_from: glob
+            contact_groups: Operator
+            use: generic_host_tpl
+            interface:
+            - eth0
+            - ens3
+        services:
+          - target: '*'
+            expr_from: glob
+            name: SSH
+            check_command: check_ssh
+        stacklight_alarms:
+          enabled: true
+        stacklight_alarm_clusters:
+          enabled: true
+          dimension_key: ${_param:nagios_host_dimension_key}
+          default_host: ${_param:nagios_alarm_cluster_default_host}
+

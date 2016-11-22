@@ -1,5 +1,6 @@
 {% set server = salt['grains.filter_by']({
     'Debian': {
+        'automatic_starting': True,
         'check_result_path': '/var/lib/nagios3/spool/checkresults',
         'command_dir': '/var/lib/nagios3/rw',
         'command_file': '/var/lib/nagios3/rw/nagios.cmd',
@@ -67,6 +68,7 @@
         'objects': {},
     },
     'RedHat': {
+        'automatic_starting': True,
         'check_result_path': '/var/log/nagios/spool/checkresults',
         'command_dir': '/var/spool/nagios/cmd',
         'command_file': '/var/spool/nagios/cmd/nagios.cmd',
