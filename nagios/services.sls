@@ -14,6 +14,11 @@ include:
 {% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
 {% set name = conf.get('service_description', conf.get('name', '{}_check_{}'.format(host_name, rowloop.index))) %}
+
+{% if conf.use is not defined and conf.get('register', 0) == 0 %}
+{% do conf.update({'use': server.default_service_template}) %}
+{% endif %}
+
 {% do salt['grains.filter_by']({'default': services},
   merge={
     grains[grain_hostname]+name: conf,

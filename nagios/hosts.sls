@@ -77,6 +77,11 @@ Nagios hostgroups configurations:
     }
   })
 %}
+
+{% if conf.use is not defined and conf.get('register', 0) == 0 %}
+{% do conf.update({'use': server.default_host_template}) %}
+{% endif %}
+
 {% do salt['grains.filter_by']({'default': hosts},
   merge={
     h_grains[grain_hostname]: conf,
