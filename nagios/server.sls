@@ -12,6 +12,9 @@ nagios-service:
     - enable: true
     - require:
       - pkg: nagios-server-package
+    - watch:
+      - file: {{ server.conf }}
+      - file: {{ server.objects_cfg_dir }}/*
 {%- else %}
 nagios-service:
   service.disabled:
@@ -146,10 +149,6 @@ nagios-server-config:
     - name: {{ server.conf }}
     - source: salt://nagios/files/nagios.cfg
     - template: jinja
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 
 {% if salt['grains.get']('os_family') == 'Debian' %}
 {#
@@ -186,8 +185,6 @@ through the web UI
     - makedirs: True
     - require:
       - pkg: nagios-server-package
-    - watch_in:
-      - service: {{ server.service }}
 {% endfor -%}
 
 {% if server.purge_distribution_config is defined and server.purge_distribution_config %}
@@ -195,10 +192,6 @@ through the web UI
 purge {{ to_purge }}:
   file.absent:
     - name: {{ to_purge }}
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-   {%- endif %}
 {% endfor %}
 {% endif %}
 
@@ -216,18 +209,10 @@ notification_by_smtp_for_services:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-service-smtp.cfg
     - source: salt://nagios/files/cmd-notify-service-smtp.cfg
     - template: jinja
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 
 notification_by_smtp_for_hosts:
   file.managed:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-host-smtp.cfg
     - source: salt://nagios/files/cmd-notify-host-smtp.cfg
     - template: jinja
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 {% endif %}
