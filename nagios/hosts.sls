@@ -25,7 +25,9 @@ include:
   {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
 {% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
+{% if grains[grain_hostname] not in hostgroups[conf.name] %}
 {% do hostgroups[conf.name].append(grains[grain_hostname]) %}
+{% endif%}
 {% endfor %}
 {% endfor %}
 {% endif %}
