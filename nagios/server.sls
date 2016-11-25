@@ -13,10 +13,8 @@ nagios-service:
       - pkg: nagios-server-package
 {%- else %}
 nagios-service:
-  service.dead:
+  service.disabled:
     - name: {{ server.service }}
-    - enable: False
-    - sig: "nagios3 -d"
 {% endif %}
 
 {% if server.ui.enabled is defined and server.ui.enabled %}
