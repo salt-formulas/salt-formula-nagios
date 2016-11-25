@@ -25,7 +25,9 @@ include:
   {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
 {% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
+{% if grains[grain_hostname] not in hostgroups[conf.name] %}
 {% do hostgroups[conf.name].append(grains[grain_hostname]) %}
+{% endif%}
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -44,10 +46,6 @@ Nagios hostgroups configurations:
           members {{ hosts|join(',') }}
         }
 {% endfor %}
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 {% endif %}
 
 {# configure user definied hosts #}
@@ -79,6 +77,11 @@ Nagios hostgroups configurations:
     }
   })
 %}
+
+{% if conf.use is not defined and conf.get('register', 0) == 0 %}
+{% do conf.update({'use': server.default_host_template}) %}
+{% endif %}
+
 {% do salt['grains.filter_by']({'default': hosts},
   merge={
     h_grains[grain_hostname]: conf,
@@ -99,8 +102,4 @@ nagios host configurations:
     - mode: 644
     - defaults:
       hosts: {{ hosts|yaml }}
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 {%- endif %}

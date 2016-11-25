@@ -42,10 +42,6 @@ nagios alarm service configurations:
     - mode: 644
     - defaults:
       services: {{ alarms|yaml }}
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 
 {% if commands.keys()|length > 0 %}
 Nagios alarm dummy commands configurations:
@@ -57,26 +53,14 @@ Nagios alarm dummy commands configurations:
     - mode: 644
     - defaults:
       commands: {{ commands|yaml }}
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 {% endif %}
 {% else %}
 nagios alarm service configurations purge:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarms.cfg
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 
 Nagios alarm dummy commands configurations purge:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarms-commands.cfg
-    {%- if server.automatic_starting %}
-    - watch_in:
-      - service: {{ server.service }}
-    {%- endif %}
 {% endif %}
 {% endif %}
