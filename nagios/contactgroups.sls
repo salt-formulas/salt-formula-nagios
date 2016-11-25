@@ -16,13 +16,17 @@ nagios contactgroup definitions:
         }
 {% endfor %}
 
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% else %}
 purge nagios contactgroup definitions:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contactgroups.cfg
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
 {% endif %}

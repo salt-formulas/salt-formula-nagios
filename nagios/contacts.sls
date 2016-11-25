@@ -27,13 +27,17 @@ nagios contact definitions:
         }
 {% endfor %}
 
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% else %}
 purge nagios contact definitions:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.contacts.cfg
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
 {% endif %}

@@ -4,6 +4,7 @@ nagios-server-package:
   pkg.installed:
     - name: {{ server.package}}
 
+
 {%- if server.automatic_starting %}
 nagios-service:
   service.running:
@@ -145,8 +146,10 @@ nagios-server-config:
     - name: {{ server.conf }}
     - source: salt://nagios/files/nagios.cfg
     - template: jinja
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 {% if salt['grains.get']('os_family') == 'Debian' %}
 {#
@@ -192,8 +195,10 @@ through the web UI
 purge {{ to_purge }}:
   file.absent:
     - name: {{ to_purge }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+   {%- endif %}
 {% endfor %}
 {% endif %}
 
@@ -211,14 +216,18 @@ notification_by_smtp_for_services:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-service-smtp.cfg
     - source: salt://nagios/files/cmd-notify-service-smtp.cfg
     - template: jinja
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 notification_by_smtp_for_hosts:
   file.managed:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-host-smtp.cfg
     - source: salt://nagios/files/cmd-notify-host-smtp.cfg
     - template: jinja
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
