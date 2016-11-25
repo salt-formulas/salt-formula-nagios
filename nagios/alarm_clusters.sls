@@ -61,8 +61,10 @@ Nagios alarm cluster dummy commands configurations:
     - mode: 644
     - defaults:
       commands: {{ commands|yaml }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 Nagios alarm cluster service configurations:
   file.managed:
@@ -73,8 +75,10 @@ Nagios alarm cluster service configurations:
     - mode: 644
     - defaults:
       services: {{ alarms|yaml }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 Nagios cluster host configurations:
   file.managed:
@@ -85,27 +89,35 @@ Nagios cluster host configurations:
     - mode: 644
     - defaults:
       hosts: {{ hosts|yaml }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 {% else %}
 Nagios alarm cluster dummy commands configurations:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarm_clusters-commands.cfg
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 Nagios alarm cluster service configurations:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.alarm_clusters.cfg
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 
 Nagios cluster host configurations:
   file.absent:
     - name: {{ server.objects_cfg_dir }}/{{ server.objects_file_prefix }}.cluster_hosts.cfg
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
 {% endif %}
 

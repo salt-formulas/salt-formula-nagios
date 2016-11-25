@@ -15,8 +15,10 @@ Nagios commands configurations:
     - mode: 644
     - defaults:
       commands: {{ commands }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
 
 {% endif %}

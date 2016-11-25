@@ -44,6 +44,8 @@ nagios service configurations:
     - mode: 644
     - defaults:
       services: {{ services|yaml }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {%- endif %}

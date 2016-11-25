@@ -44,8 +44,10 @@ Nagios hostgroups configurations:
           members {{ hosts|join(',') }}
         }
 {% endfor %}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {% endif %}
 
 {# configure user definied hosts #}
@@ -97,6 +99,8 @@ nagios host configurations:
     - mode: 644
     - defaults:
       hosts: {{ hosts|yaml }}
+    {%- if server.automatic_starting %}
     - watch_in:
       - service: {{ server.service }}
+    {%- endif %}
 {%- endif %}
