@@ -67,7 +67,7 @@ Nagios hostgroups configurations:
 {% endif %}
 {% endfor %}
 
-{% if interface_names[host_name]|length > 0 %}
+{% if interface_names.get(host_name, [])|length > 0 %}
 
 {% do salt['grains.filter_by']({'default': hosts},
   merge={
