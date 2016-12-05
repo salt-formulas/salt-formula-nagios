@@ -49,6 +49,29 @@ Nagios UI configrations with HTTP basic authentication
             username: nagiosadmin
             password: secret
 
+Nagios UI configrations with LDAP authentication/authorization:
+
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        ui:
+          enabled: true
+          basic_auth:
+            username: nagiosadmin
+            password: secret
+          ldap_authnz:
+            # Url format is described here
+            # http://httpd.apache.org/docs/2.0/mod/mod_auth_ldap.html#authldapurl
+            url: ldaps://ldap.domain.ltd:<port>/cn=users,dc=domain,dc=local?uid?sub?<filter>
+            bind_dn: cn=admin,dc=domain,dc=local
+            bind_password: secret
+            # Optionaly, restrict access to members of a group:
+            ldap_group_dn: cn=admins,ou=groups,dc=domain,dc=local
+            ldap_group_attribute: memberUid
+
 The formula configures commands to send notifications by SMTP.
 The authentifcation is disabled by default.
 Authentication methods supported is either 'plain', 'login' or 'CRAMMD5'.

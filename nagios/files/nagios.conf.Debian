@@ -26,7 +26,25 @@
     AuthName "Nagios Access"
     AuthType Basic
     AuthUserFile {{ server.ui.htpasswd_file }}
+    {%- if server.ui.get('ldap_authnz') is mapping and server.ui.ldap_authnz.url is defined %}
+    AuthBasicProvider file ldap
+    AuthLDAPURL "{{ server.ui.ldap_authnz.url }}"
+    AuthLDAPBindDN "{{ server.ui.ldap_authnz.bind_dn }}"
+    AuthLDAPBindPassword "{{ server.ui.ldap_authnz.bind_password }}"
+      {%- if server.ui.ldap_authnz.ldap_group_dn is defined %}
+    AuthLDAPGroupAttribute {{ server.ui.ldap_authnz.ldap_group_attribute }}
+    AuthLDAPGroupAttributeIsDN off
+    AuthBasicAuthoritative on
+    <RequireAny>
+    require user {{ server.ui.basic_auth.username }}
+    Require ldap-group {{ server.ui.ldap_authnz.ldap_group_dn }}
+    </RequireAny>
+      {%- else %}
     require valid-user
+      {%- endif %}
+    {%- else %}
+    require valid-user
+    {%- endif %}
   </DirectoryMatch>
 
   <Directory {{ server.ui.physical_html_path }}>

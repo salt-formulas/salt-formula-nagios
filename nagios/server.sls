@@ -109,6 +109,16 @@ wsgi_pkg:
     - watch_in:
       - service: {{ server.ui.apache_service }}
 
+{%- if server.ui.get('ldap_authnz') is mapping and server.ui.ldap_authnz.url is defined %}
+{% for mod in ('ldap', 'authnz_ldap') %}
+enable_apache_{{ mod }}_module:
+  apache_module.enable:
+    - name: {{ mod }}
+    - watch_in:
+      - service: {{ server.ui.apache_service }}
+{% endfor %}
+{%- endif %}
+
 enable_apache_wsgi_module:
   apache_module.enable:
     - name: wsgi
