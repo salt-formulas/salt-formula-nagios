@@ -26,18 +26,18 @@
     AuthName "Nagios Access"
     AuthType Basic
     AuthUserFile {{ server.ui.htpasswd_file }}
-    {%- if server.ui.get('ldap_authnz') is mapping and server.ui.ldap_authnz.url is defined %}
+    {%- if server.ui.auth.ldap.enabled %}
     AuthBasicProvider file ldap
-    AuthLDAPURL "{{ server.ui.ldap_authnz.url }}"
-    AuthLDAPBindDN "{{ server.ui.ldap_authnz.bind_dn }}"
-    AuthLDAPBindPassword "{{ server.ui.ldap_authnz.bind_password }}"
-      {%- if server.ui.ldap_authnz.ldap_group_dn is defined %}
-    AuthLDAPGroupAttribute {{ server.ui.ldap_authnz.ldap_group_attribute }}
+    AuthLDAPURL "{{ server.ui.auth.ldap.url }}"
+    AuthLDAPBindDN "{{ server.ui.auth.ldap.bind_dn }}"
+    AuthLDAPBindPassword "{{ server.ui.auth.ldap.bind_password }}"
+      {%- if server.ui.auth.ldap.ldap_group_dn is defined %}
+    AuthLDAPGroupAttribute {{ server.ui.auth.ldap.ldap_group_attribute }}
     AuthLDAPGroupAttributeIsDN off
     AuthBasicAuthoritative on
     <RequireAny>
-    require user {{ server.ui.basic_auth.username }}
-    Require ldap-group {{ server.ui.ldap_authnz.ldap_group_dn }}
+    require user {{ server.ui.auth.basic.username }}
+    Require ldap-group {{ server.ui.auth.ldap.ldap_group_dn }}
     </RequireAny>
       {%- else %}
     require valid-user

@@ -36,9 +36,10 @@ parameters:
         enabled: true
         bind: ${_param:nagios_ui_bind}
         port: ${_param:nagios_ui_port}
-        basic_auth:
-          username: ${_param:nagios_password}
-          password: ${_param:nagios_username}
+        auth:
+          basic:
+            username: ${_param:nagios_password}
+            password: ${_param:nagios_username}
         wsgi:
           bind: ${_param:nagios_status_bind}
           port: ${_param:nagios_status_port}

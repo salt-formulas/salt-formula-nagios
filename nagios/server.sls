@@ -28,11 +28,11 @@ nagios-cgi-server-package:
     - name: {{ server.ui.package}}
 {% endif %}
 
-{% if server.ui.basic_auth is defined and server.ui.basic_auth.password is defined %}
+{% if server.ui.auth.basic is defined and server.ui.auth.basic.password is defined %}
 nagios-cgi-username:
   webutil.user_exists:
-    - name: {{ server.ui.basic_auth.get('username', 'nagiosadmin') }}
-    - password: {{ server.ui.basic_auth.password }}
+    - name: {{ server.ui.auth.basic.get('username', 'nagiosadmin') }}
+    - password: {{ server.ui.auth.basic.password }}
     - htpasswd_file: {{ server.ui.htpasswd_file }}
     - options: d
     - force: true
@@ -109,7 +109,7 @@ wsgi_pkg:
     - watch_in:
       - service: {{ server.ui.apache_service }}
 
-{%- if server.ui.get('ldap_authnz') is mapping and server.ui.ldap_authnz.url is defined %}
+{%- if server.ui.auth.ldap.enabled %}
 {% for mod in ('ldap', 'authnz_ldap') %}
 enable_apache_{{ mod }}_module:
   apache_module.enable:
