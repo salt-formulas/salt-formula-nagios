@@ -90,8 +90,19 @@ referenced in the `contact` objects.
       notification:
         smtp:
           auth: false
-          host: 127.0.0.1
+          url: smtp://127.0.0.1:25
           from: nagios@localhost
+
+    # An example to use gmail account as a SMTP relay
+    nagios:
+      server:
+        enabled: true
+      notification:
+        smtp:
+          auth: login
+          url: smtp://smtp.gmail.com:587
+          from: <you>@gmail.com
+          starttls: true
           username: foo
           password: secret
 
