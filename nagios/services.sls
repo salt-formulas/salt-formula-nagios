@@ -7,6 +7,8 @@ include:
 
 {% if server.dynamic is mapping and server.dynamic.enabled %}
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
+{% set hostname_suffix = server.dynamic.get('hostname_suffix') %}
+
 {% if server.dynamic.services is iterable and server.dynamic.services|length > 0 %}
 
 {% for conf in server.dynamic.services %}
@@ -25,10 +27,16 @@ include:
   })
 %}
 
+{% if hostname_suffix %}
+{% set full_host_name = grains[grain_hostname] + '.' + hostname_suffix %}
+{% else %}
+{% set full_host_name = grains[grain_hostname] %}
+{% endif %}
+
 {% do salt['grains.filter_by']({'default': services},
   merge={
     grains[grain_hostname]+name: {
-      'host_name': grains[grain_hostname],
+      'host_name': full_host_name,
       'service_description': name,
     }
   })

@@ -169,6 +169,7 @@ Also, **hostgroups**, **hosts** and **services** can be created dynamically usin
         dynamic:
           enabled: true
           grain_hostname: 'host'
+          #hostname_suffix: .prod # optionally suffix hostnames
           hostgroups:
             - target: '*'
               name: All
