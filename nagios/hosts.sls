@@ -4,6 +4,7 @@ include:
 - nagios.server
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
+{% set hostname_suffix = server.dynamic.get('hostname_suffix') %}
 
 {%- set hostgroups = {} %}
 
@@ -25,8 +26,15 @@ include:
   {% do hostgroups.update({conf.name: []}) %}
 {% endif %}
 {% for host_name, grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
-{% if grains[grain_hostname] not in hostgroups[conf.name] %}
-{% do hostgroups[conf.name].append(grains[grain_hostname]) %}
+
+{% if hostname_suffix %}
+{% set full_host_name = grains[grain_hostname] + '.' + hostname_suffix %}
+{% else %}
+{% set full_host_name = grains[grain_hostname] %}
+{% endif %}
+
+{% if full_host_name  not in hostgroups[conf.name] %}
+{% do hostgroups[conf.name].append(full_host_name) %}
 {% endif%}
 {% endfor %}
 {% endfor %}
@@ -41,10 +49,12 @@ Nagios hostgroups configurations:
     - mode: 644
     - contents: |
 {% for hg, hosts in hostgroups.items() %}
+  {% if hosts|length > 0 %}
         define hostgroup {
           hostgroup_name {{ hg }}
           members {{ hosts|join(',') }}
         }
+  {%- endif %}
 {% endfor %}
 {% endif %}
 
@@ -69,11 +79,17 @@ Nagios hostgroups configurations:
 
 {% if interface_names.get(host_name, [])|length > 0 %}
 
+{% if hostname_suffix %}
+{% set full_host_name = h_grains[grain_hostname] + '.' + hostname_suffix %}
+{% else %}
+{% set full_host_name = h_grains[grain_hostname] %}
+{% endif %}
+
 {% do salt['grains.filter_by']({'default': hosts},
   merge={
     h_grains[grain_hostname]: {
       'address': h_grains['ip_interfaces'][interface_names[host_name][0]][0],
-      'host_name': h_grains[grain_hostname]
+      'host_name': full_host_name,
     }
   })
 %}

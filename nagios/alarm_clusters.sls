@@ -26,7 +26,8 @@ include:
 {% set host_name = salt['nagios_alarming.alarm_cluster_hostname'](
                     dimension_key,
                     alarm_def,
-                    default_host)
+                    default_host,
+                    server.dynamic.get('hostname_suffix'))
 %}
 
 {% do salt['grains.filter_by']({'default': hosts},

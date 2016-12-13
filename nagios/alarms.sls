@@ -5,6 +5,8 @@ include:
 {% if server.dynamic.stacklight_alarms is mapping and server.dynamic.stacklight_alarms.enabled is defined and server.dynamic.stacklight_alarms.enabled %}
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
+{% set hostname_suffix = server.dynamic.get('hostname_suffix') %}
+
 {% set alarms = {} %}
 {% set commands = {} %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
@@ -20,8 +22,14 @@ include:
 
 {% do commands.update({check_command: { 'command_line': 'check_dummy 3 "No data received for at least {} seconds"'.format(threshold)}}) %}
 
+{% if hostname_suffix %}
+{% set full_host_name = node_grains[grain_hostname] + '.' + hostname_suffix %}
+{% else %}
+{% set full_host_name = node_grains[grain_hostname] %}
+{% endif %}
+
 {% do alarms.update(salt['nagios_alarming.alarm_to_service'](
-                     node_grains[grain_hostname],
+                     full_host_name,
                      alarm_id,
                      alarm_def,
                      check_command,
