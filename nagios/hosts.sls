@@ -49,10 +49,12 @@ Nagios hostgroups configurations:
     - mode: 644
     - contents: |
 {% for hg, hosts in hostgroups.items() %}
+  {% if hosts|length > 0 %}
         define hostgroup {
           hostgroup_name {{ hg }}
           members {{ hosts|join(',') }}
         }
+  {%- endif %}
 {% endfor %}
 {% endif %}
 
