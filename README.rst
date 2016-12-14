@@ -92,6 +92,12 @@ referenced in the `contact` objects.
           auth: false
           url: smtp://127.0.0.1:25
           from: nagios@localhost
+          # Notification email subject can be defined, must be one line
+          # default subjects are:
+          host_subject: >-
+             ** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **
+          service_subject: >-
+             ** $NOTIFICATIONTYPE$ Service Alert: $HOSTNAME$/$SERVICEDESC$ is $SERVICESTATE$ **
 
     # An example to use gmail account as a SMTP relay
     nagios:
