@@ -23,17 +23,23 @@ include:
 
 {% for alarm_id, alarm_def in node_grains.heka.aggregator.get('alarm_cluster', {}).items() %}
 {% if alarm_def.get('alerting', 'enabled_with_notification') != 'disabled' %}
-{% set host_name = salt['nagios_alarming.alarm_cluster_hostname'](
+{% set full_host_name = salt['nagios_alarming.alarm_cluster_hostname'](
                     dimension_key,
                     alarm_def,
                     default_host,
                     server.dynamic.get('hostname_suffix'))
 %}
+{% set host_name = salt['nagios_alarming.alarm_cluster_hostname'](
+                    dimension_key,
+                    alarm_def,
+                    default_host)
+%}
 
 {% do salt['grains.filter_by']({'default': hosts},
   merge={ host_name: {
    'address': '1.1.1.1',
-   'host_name': host_name,
+   'host_name': full_host_name,
+   'display_name': host_name,
    'check_command': 'dummy_ok_for_cluster_hosts',
    'use': server.dynamic.stacklight_alarm_clusters.get('host_template', server.default_host_template),
   }
@@ -41,7 +47,7 @@ include:
 %}
 
 {% do alarms.update(salt['nagios_alarming.alarm_cluster_to_service'](
-                     host_name,
+                     full_host_name,
                      alarm_id,
                      alarm_def,
                      check_command,
