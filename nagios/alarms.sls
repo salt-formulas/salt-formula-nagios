@@ -34,7 +34,7 @@ include:
                      alarm_def,
                      check_command,
                      threshold,
-                     {'use': server.dynamic.stacklight_alarms.get('service_template', server.default_service_template)})) %}
+                     {'use': server.dynamic.stacklight_alarms.get('service_template', server.default_service_template), 'display_name': node_grains[grain_hostname]})) %}
 {% endif %}
 {% endfor %}
 {%- endif %} {# end metric_collector alarms #}

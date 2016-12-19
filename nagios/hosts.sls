@@ -90,6 +90,7 @@ Nagios hostgroups configurations:
     h_grains[grain_hostname]: {
       'address': h_grains['ip_interfaces'][interface_names[host_name][0]][0],
       'host_name': full_host_name,
+      'display_name': h_grains[grain_hostname],
     }
   })
 %}

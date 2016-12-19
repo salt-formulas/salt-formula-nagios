@@ -23,6 +23,12 @@
         'state_retention_file': '/var/lib/nagios3/retention.dat',
         'status_file': '/var/cache/nagios3/status.dat',
         'temp_file': '/var/cache/nagios3/nagios.tmp',
+        'notification': {
+          'smtp': {
+            'host_subject': '** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **',
+            'service_subject': '** $NOTIFICATIONTYPE$ Service Alert: $HOSTNAME$/$SERVICEDESC$ is $SERVICESTATE$ **',
+          },
+        },
         'ui': {
           'bind': '0.0.0.0',
           'port': 80,
@@ -96,6 +102,12 @@
         'state_retention_file': '/var/log/nagios/retention.dat',
         'status_file': '/var/log/nagios/status.dat',
         'temp_file': '/var/log/nagios/nagios.tmp',
+        'notification': {
+          'smtp': {
+            'host_subject': '** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **',
+            'service_subject': '** $NOTIFICATIONTYPE$ Service Alert: $HOSTNAME$/$SERVICEDESC$ is $SERVICESTATE$ **',
+          },
+        },
         'ui': {
           'cgi_conf': '/etc/nagios/cgi.cfg',
           'url_html_path': '/nagios3',

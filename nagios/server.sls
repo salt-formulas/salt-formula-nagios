@@ -213,7 +213,6 @@ additional packages:
     - names: {{ server.additional_packages }}
 {% endif %}
 
-{% if server.notification is defined and server.notification.get('smtp') is mapping %}
 notification_by_smtp_for_services:
   file.managed:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-service-smtp.cfg
@@ -225,4 +224,3 @@ notification_by_smtp_for_hosts:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-host-smtp.cfg
     - source: salt://nagios/files/cmd-notify-host-smtp.cfg
     - template: jinja
-{% endif %}
