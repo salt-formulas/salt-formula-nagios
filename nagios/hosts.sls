@@ -68,6 +68,12 @@ Nagios hostgroups configurations:
 
 {% for host_name, h_grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
+{% if conf.get('network') %}
+
+{% set address = salt['nagios_alarming.host_address'](conf.get('network'),
+       h_grains[conf.get('ip_version', 'ipv4')]) %}
+
+{% else %} {# legacy code #}
 {% for nic in conf.get('interface', ['eth0']) %}
 {% if nic in h_grains['ip_interfaces'] %}
     {% if host_name not in interface_names %}
@@ -78,6 +84,12 @@ Nagios hostgroups configurations:
 {% endfor %}
 
 {% if interface_names.get(host_name, [])|length > 0 %}
+{% set address = h_grains['ip_interfaces'][interface_names[host_name][0]][0] %}
+{% endif %}
+
+{% endif %}
+
+{% if address is defined and address %}
 
 {% if hostname_suffix %}
 {% set full_host_name = h_grains[grain_hostname] + '.' + hostname_suffix %}
@@ -88,7 +100,7 @@ Nagios hostgroups configurations:
 {% do salt['grains.filter_by']({'default': hosts},
   merge={
     h_grains[grain_hostname]: {
-      'address': h_grains['ip_interfaces'][interface_names[host_name][0]][0],
+      'address': address,
       'host_name': full_host_name,
       'display_name': h_grains[grain_hostname],
     }

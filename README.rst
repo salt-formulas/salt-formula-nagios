@@ -195,9 +195,7 @@ Also, **hostgroups**, **hosts** and **services** can be created dynamically usin
             - target: 'G@services:openssh'
               contact_groups: Operator
               use: generic_host_tpl
-              interface:
-              - eth0
-              - ens3
+              network: 10.0.0.0/8
           services:
             - target: 'G@roles:openssh.server'
               name: SSH
@@ -207,6 +205,47 @@ Also, **hostgroups**, **hosts** and **services** can be created dynamically usin
               name: HTTP Nagios
               use: generic_service_tpl
               check_command: check_http_basic_auth!localhost!${nagios:server:ui:port}
+
+
+Note about dynamic hosts IP addresses configuration:
+
+There are 2 different ways to configure the Host IP adddress, the prefered way
+is to define the **network** of the nodes to pickup the first IP address found
+belonging to this network.
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        dynamic:
+          enabled: true
+          hosts:
+            - target: '*'
+              contact_groups: Operator
+              network: 10.0.0.0/8
+
+
+The alternative way is to define the **interface** list, to pickup the first IP
+address of the first interface found.
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        dynamic:
+          enabled: true
+          hosts:
+            - target: '*'
+              contact_groups: Operator
+              interface:
+              - eth0
+              - ens0
+
+If both properties are defined, the **network** option wins and the **interface** is
+ignored.
+
 
 StackLight Alarms
 =================
@@ -268,9 +307,5 @@ This formula has been tested on Ubuntu Xenial **only**.
 TODO
 ====
 
-* Find a more suitable way to configure IP address for **dynamic hosts** creation.
-  Currently, a list of `NIC interfaces` is provided and the state picks the first
-  IP address of the first interface found.
-  This is to support different Linux kernel versions which use different interface names.
 * Configure Apache using salt-formula-apache (using service metadata) or alternatively
   using Nginx.
