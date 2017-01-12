@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from netaddr import IPNetwork, IPAddress
+
+
 def alarm_to_service(host, alarm_id, alarm, check_command, threshold, default=None):
     """
     Return a dictinnary representing a Nagios service from an alarm definition.
@@ -87,3 +90,21 @@ def alarm_cluster_hostname(dimension_key, alarm, default_hostname, suffix=None):
             return value + suffix
 
     return default_hostname + suffix
+
+
+def host_address(networks, addresses):
+    """
+    Return the IP address which belongs to a network
+    """
+
+    if isinstance(networks, basestring):
+        networks = [networks]
+
+    for net in networks:
+        for addr in addresses:
+            try:
+                if IPAddress(addr) in IPNetwork(net):
+                    return addr
+            except: pass
+    return
+
