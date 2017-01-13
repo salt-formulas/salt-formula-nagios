@@ -209,7 +209,7 @@ Also, **hostgroups**, **hosts** and **services** can be created dynamically usin
 
 Note about dynamic hosts IP addresses configuration:
 
-There are 2 different ways to configure the Host IP adddress, the prefered way
+There are 2 different ways to configure the Host IP adddresses, the preferred way
 is to define the **network** of the nodes to pickup the first IP address found
 belonging to this network.
 
