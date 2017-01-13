@@ -75,7 +75,7 @@ Nagios hostgroups configurations:
 
 {% else %} {# legacy code #}
 {% for nic in conf.get('interface', ['eth0']) %}
-{% if nic in h_grains['ip_interfaces'] %}
+{% if h_grains['ip_interfaces'].get(nic, [])|length > 0%}
     {% if host_name not in interface_names %}
       {% do interface_names.update({host_name: []}) %}
     {% endif %}
