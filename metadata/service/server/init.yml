@@ -50,29 +50,11 @@ parameters:
           host_command_name: notify-host-by-smtp
           service_command_name: notify-service-by-smtp
       dynamic:
-        enabled: true
-        grain_hostname: 'host'
-        hostgroups:
-          - target: '*'
-            name: All
-            expr_from: glob
-        hosts:
-          - target: '*'
-            expr_from: glob
-            contact_groups: Operator
-            use: generic_host_tpl
-            interface:
-            - eth0
-            - ens3
-        services:
-          - target: '*'
-            expr_from: glob
-            name: SSH
-            check_command: check_ssh
+        enabled: false
         stacklight_alarms:
-          enabled: true
+          enabled: false
         stacklight_alarm_clusters:
-          enabled: true
+          enabled: false
           dimension_key: ${_param:nagios_host_dimension_key}
           default_host: ${_param:nagios_alarm_cluster_default_host}
 
