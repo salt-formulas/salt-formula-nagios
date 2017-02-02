@@ -4,6 +4,7 @@ include:
 - nagios.server
 
 {% set grain_hostname = server.dynamic.get('grain_hostname', 'nodename') %}
+{% set grain_interfaces = server.dynamic.get('grain_interfaces', 'ip4_interfaces') %}
 {% set hostname_suffix = server.dynamic.get('hostname_suffix') %}
 
 {%- set hostgroups = {} %}
@@ -75,7 +76,7 @@ Nagios hostgroups configurations:
 
 {% else %} {# legacy code #}
 {% for nic in conf.get('interface', ['eth0']) %}
-{% if h_grains['ip_interfaces'].get(nic, [])|length > 0%}
+{% if h_grains[grain_interfaces].get(nic, [])|length > 0%}
     {% if host_name not in interface_names %}
       {% do interface_names.update({host_name: []}) %}
     {% endif %}
@@ -84,7 +85,7 @@ Nagios hostgroups configurations:
 {% endfor %}
 
 {% if interface_names.get(host_name, [])|length > 0 %}
-{% set address = h_grains['ip_interfaces'][interface_names[host_name][0]][0] %}
+{% set address = h_grains[grain_interfaces][interface_names[host_name][0]][0] %}
 {% endif %}
 
 {% endif %}
