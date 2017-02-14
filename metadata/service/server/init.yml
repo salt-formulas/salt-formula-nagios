@@ -19,7 +19,7 @@ parameters:
       enabled: true
       automatic_starting: ${_param:nagios_automatic_starting}
       check_external_commands: 1
-      command_check_interval: 15s
+      command_check_interval: -1
       log_external_commands: 1
       log_passive_checks: 1
       log_rotation_method: d
