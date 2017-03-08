@@ -69,7 +69,7 @@ Nagios hostgroups configurations:
 
 {% for host_name, h_grains in salt['mine.get'](conf.get('target', '*'), 'grains.items', conf.get('expr_from', 'compound')).items() %}
 
-{% if conf.get('network') %}
+{% if conf.get('network') and (conf.network is string or (conf.network is iterable and conf.network|length > 0)) %}
 
 {% set address = salt['nagios_alarming.host_address'](conf.get('network'),
        h_grains[conf.get('ip_version', 'ipv4')]) %}
