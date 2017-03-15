@@ -1,35 +1,35 @@
 {%- from "nagios/map.jinja" import server with context %}
 {%- if server.enabled %}
-nagios-server-package:
+nagios_server_package:
   pkg.installed:
-    - name: {{ server.package}}
+  - names: {{ server.package }}
 
 
 {%- if server.automatic_starting %}
-nagios-service:
+nagios_service:
   service.running:
     - name: {{ server.service }}
     - enable: true
     - require:
-      - pkg: nagios-server-package
+      - pkg: nagios_server_package
     - watch:
       - file: {{ server.conf }}
       - file: {{ server.objects_cfg_dir }}/*
 {%- else %}
-nagios-service:
+nagios_service:
   service.disabled:
     - name: {{ server.service }}
 {% endif %}
 
 {% if server.ui.enabled is defined and server.ui.enabled %}
 {% if server.ui.package %}
-nagios-cgi-server-package:
+nagios_cgi_server_package:
   pkg.installed:
     - name: {{ server.ui.package}}
 {% endif %}
 
 {% if server.ui.auth.basic is defined and server.ui.auth.basic.password is defined %}
-nagios-cgi-username:
+nagios_cgi_username:
   webutil.user_exists:
     - name: {{ server.ui.auth.basic.get('username', 'nagiosadmin') }}
     - password: {{ server.ui.auth.basic.password }}
@@ -37,21 +37,21 @@ nagios-cgi-username:
     - options: d
     - force: true
 {% else %}
-remove-basic_htpasswd_file:
+remove_basic_htpasswd_file:
   file.absent:
     - name: {{ server.ui.htpasswd_file }}
 {% endif %}
 
-nagios-cgi-config:
+nagios_cgi_config:
   file.managed:
     - name: {{ server.ui.cgi_conf }}
     - source: salt://nagios/files/cgi.cfg
     - template: jinja
     - require:
 {% if server.cgi_package %}
-      - pkg: nagios-cgi-server-package
+      - pkg: nagios_cgi_server_package
 {% else %}
-      - pkg: nagios-server-package
+      - pkg: nagios_server_package
 {% endif %}
 
 {# Apache2 is installed by dependency, just configure it! #}
@@ -148,13 +148,13 @@ enable Nagios WSGI app:
 {%- endif %}
 
 {% else %} {% if server.ui.package %}
-remove-nagios-cgi-server-package:
+remove_nagios_cgi_server_package:
   pkg.removed:
     - name: {{ server.ui.package}}
 {% endif %}
 {% endif %} {# ui enabled #}
 
-nagios-server-config:
+nagios_server_config:
   file.managed:
     - name: {{ server.conf }}
     - source: salt://nagios/files/nagios.cfg
@@ -180,7 +180,7 @@ through the web UI
     - group: {{ server.ui.apache_user }}
     - dir_mode: 0750
     - require:
-      - pkg: nagios-server-package
+      - pkg: nagios_server_package
     - watch_in:
       - service: {{ server.ui.apache_service }}
       - service: {{ server.service }}
@@ -194,7 +194,7 @@ through the web UI
     - mode: 755
     - makedirs: True
     - require:
-      - pkg: nagios-server-package
+      - pkg: nagios_server_package
 {% endfor -%}
 
 {% if server.purge_distribution_config is defined and server.purge_distribution_config %}
