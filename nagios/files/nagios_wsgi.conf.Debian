@@ -18,7 +18,7 @@
   # WSGI implementation for the process_service_check command
   SetEnv NAGIOS_CMD_FILE {{ server.command_file }}
   WSGIScriptAlias {{ server.ui.wsgi.location }} {{ server.ui.wsgi.script_path }}
-  WSGIDaemonProcess nagios_process_service_checks user=nagios group=nagios processes=2 threads=15 display-name='%{GROUP}' maximum-requests=10000
+  WSGIDaemonProcess nagios_process_service_checks user=nagios group=nagios processes={{ server.ui.wsgi.num_processes }} threads={{ server.ui.wsgi.num_threads }} display-name='%{GROUP}' maximum-requests={{ server.ui.wsgi.maximum_requests }}
   WSGIProcessGroup nagios_process_service_checks
   <Location {{ server.ui.wsgi.location }}>
      AuthName "Nagios Access"
