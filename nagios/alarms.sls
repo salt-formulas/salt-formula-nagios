@@ -15,6 +15,12 @@ include:
 
 {% set triggers = node_grains.heka.metric_collector.get('trigger', {}) %}
 {% for alarm_id, alarm_def in node_grains.heka.metric_collector.get('alarm', {}).items() %}
+
+{#- Allow overriding 'alerting: enabled/enabled_with_notification' field in grains. #}
+{%- if server.notification is defined and server.notification.alarm_enabled_override is defined and server.notification.alarm_enabled_override %}
+{%- do alarm_def.update({'alerting': 'enabled_with_notification'}) %}
+{%- endif %}
+
 {% if alarm_def.get('alerting', 'enabled') != 'disabled' %}
 
 {% set check_command = 'check_dummy_unknown_' + node_grains[grain_hostname] + alarm_id %}
