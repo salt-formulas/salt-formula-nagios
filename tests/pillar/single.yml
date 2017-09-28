@@ -1,3 +1,0 @@
-nagios:
-  server:
-    enabled: true

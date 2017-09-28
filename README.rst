@@ -75,42 +75,6 @@ Nagios UI configuration with LDAP authentication/authorization:
               ldap_group_dn: cn=admins,ou=groups,dc=domain,dc=local
               ldap_group_attribute: memberUid
 
-The formula configures commands to send notifications by SMTP.
-The authentifcation is disabled by default.
-Authentication methods supported is either 'plain', 'login' or 'CRAMMD5'.
-
-The command created `notify-service-by-smtp` and `notify-host-by-smtp` can be
-referenced in the `contact` objects.
-
-.. code-block:: yaml
-
-    nagios:
-      server:
-        enabled: true
-      notification:
-        smtp:
-          auth: false
-          url: smtp://127.0.0.1:25
-          from: nagios@localhost
-          # Notification email subject can be defined, must be one line
-          # default subjects are:
-          host_subject: >-
-             ** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **
-          service_subject: >-
-             ** $NOTIFICATIONTYPE$ Service Alert: $HOSTNAME$/$SERVICEDESC$ is $SERVICESTATE$ **
-
-    # An example to use gmail account as a SMTP relay
-    nagios:
-      server:
-        enabled: true
-      notification:
-        smtp:
-          auth: login
-          url: smtp://smtp.gmail.com:587
-          from: <you>@gmail.com
-          starttls: true
-          username: foo
-          password: secret
 
 Nagios objects can be defined in pillar:
 
@@ -295,13 +259,128 @@ To configure StackLight alarm clusters (known as GSE):
           default_host: clusters # optional
 
 
+Nagios Notification Handlers
+============================
+
+You can configure notification handlers.  Currently supported handlers are SMTP, Slack,
+Salesforce, and Pagerduty.
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        notification:
+          slack:
+            enabled: true
+            webhook_url: https://hooks.slack.com/services/abcdef/12345
+          pagerduty:
+            enabled: true
+            key: abcdef12345
+          sfdc:
+            enabled: true
+            client_id: abcdef12345
+            client_secret: abcdef12345
+            username: abcdef
+            password: abcdef
+            auth_url: https://abcedf.my.salesforce.com
+            environment: abcdef
+            organization_id: abcdef
+
+
+.. code-block:: yaml
+
+    # SMTP without auth
+    nagios:
+      server:
+        enabled: true
+        notification:
+          smtp:
+            auth: false
+            url: smtp://127.0.0.1:25
+            from: nagios@localhost
+            # Notification email subject can be defined, must be one line
+            # default subjects are:
+            host_subject: >-
+               ** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **
+            service_subject: >-
+               ** $NOTIFICATIONTYPE$ Service Alert: $HOSTNAME$/$SERVICEDESC$ is $SERVICESTATE$ **
+
+    # An example using a Gmail account as a SMTP relay
+    nagios:
+      server:
+        enabled: true
+        notification:
+          smtp:
+            auth: login
+            url: smtp://smtp.gmail.com:587
+            from: <you>@gmail.com
+            starttls: true
+            username: foo
+            password: secret
+
+
+Each handler adds two commands, `notify-host-by-<HANDLER>`, and `notify-service-by-<HANDLER>`, that you can
+reference in a contact.
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        objects:
+          contact:
+            sfdc:
+              alias: sfdc
+              contactgroups:
+                - Operator
+              email: root@localhost
+              host_notification_commands: notify-host-by-sfdc
+              host_notification_options: d,r
+              host_notification_period: 24x7
+              host_notifications_enabled: 1
+              service_notification_commands: notify-service-by-sfdc
+              service_notification_options: c,r
+              service_notification_period: 24x7
+              service_notifications_enabled: 1
+
+
+By default in Stacklight, notifications are only enabled for `00-top-clusters` and individual host
+and SSH checks.  If you want to enable notifications for all checks you can enable this value:
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        notification:
+          alarm_enabled_override: true
+
+
+The notification interval defaults to zero, which will only send one notification when the alert
+triggers.  You can override the interval if you want notifications to repeat.  For example, to
+have them repeat every 30 minutes:
+
+.. code-block:: yaml
+
+    nagios:
+      server:
+        enabled: true
+        objects:
+          hosts:
+            generic_host_tpl:
+              notification_interval: 30
+          services:
+            generic_service_tpl:
+              notification_interval: 30
+
+
 Read more
 =========
 
 * https://www.nagios.org
 
-Plateforme support
-=================
+Platform support
+================
 
 This formula has been tested on Ubuntu Xenial **only**.
 

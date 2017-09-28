@@ -213,6 +213,8 @@ additional packages:
     - names: {{ server.additional_packages }}
 {% endif %}
 
+{%- if server.notification is defined %}
+{%- if server.notification.smtp is defined %}
 notification_by_smtp_for_services:
   file.managed:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-service-smtp.cfg
@@ -224,3 +226,116 @@ notification_by_smtp_for_hosts:
     - name: {{ server.objects_cfg_dir}}/cmd-notify-host-smtp.cfg
     - source: salt://nagios/files/cmd-notify-host-smtp.cfg
     - template: jinja
+{%- endif %}
+
+{%- if server.notification.sfdc is defined and server.notification.sfdc.get('enabled', false) %}
+{%- set sfdc_params = {
+    'log_file': server.log_dir + '/sfdc_nagios.log',
+    'salesforce_module': server.handler_dir + '/sfdc/salesforce.py',
+    'sfdc_plugin': server.handler_dir + '/sfdc/sfdc_nagios.py',
+    'sfdc_config_file': server.conf_dir + '/sfdc_nagios.yaml',
+    'token_cache_file': server.pid_dir + '/sfdc_token_cache',
+} %}
+{%- do sfdc_params.update(server.notification.sfdc) %}
+notification_sfdc_module:
+  file.managed:
+    - name: {{ sfdc_params.salesforce_module }}
+    - source: salt://nagios/files/handlers/sfdc/salesforce.py
+    - makedirs: True
+    - mode: 644
+
+notification_sfdc_plugin:
+  file.managed:
+    - name: {{ sfdc_params.sfdc_plugin }}
+    - source: salt://nagios/files/handlers/sfdc/sfdc_nagios.py
+    - makedirs: True
+    - mode: 755
+
+notification_nagios_sfdc_config:
+  file.managed:
+    - name: {{ server.objects_cfg_dir }}/notify_sfdc.cfg
+    - source: salt://nagios/files/handlers/sfdc/notify_sfdc.cfg
+    - template: jinja
+    - mode: 644
+    - defaults:
+      sfdc_params: {{ sfdc_params }}
+
+notification_sfdc_plugin_config:
+  file.managed:
+    - name: {{ sfdc_params.sfdc_config_file }}
+    - source: salt://nagios/files/handlers/sfdc/sfdc_nagios.yaml
+    - template: jinja
+    - mode: 644
+    - defaults:
+      sfdc_params: {{ sfdc_params }}
+
+notification_sfdc_plugin_logrotate:
+  file.managed:
+    - name: /etc/logrotate.d/sfdc_nagios
+    - source: salt://nagios/files/handlers/sfdc/sfdc_nagios_logrotate
+    - template: jinja
+    - mode: 644
+    - defaults:
+      sfdc_params: {{ sfdc_params }}
+{%- endif %}
+
+{%- if server.notification.slack is defined and server.notification.slack.get('enabled', false) %}
+{%- set slack_params = {
+    'log_file': server.log_dir + '/slack_nagios.log',
+    'slack_plugin': server.handler_dir + '/slack/slack.py',
+} %}
+{%- do slack_params.update(server.notification.slack) %}
+notification_slack_plugin_logrotate:
+  file.managed:
+    - name: /etc/logrotate.d/slack_nagios
+    - source: salt://nagios/files/handlers/slack/slack_nagios_logrotate
+    - template: jinja
+    - mode: 644
+    - defaults:
+      slack_params: {{ slack_params }}
+
+notification_nagios_slack_config:
+  file.managed:
+    - name: {{ server.objects_cfg_dir }}/notify_slack.cfg
+    - source: salt://nagios/files/handlers/slack/notify_slack.cfg
+    - template: jinja
+    - mode: 644
+    - defaults:
+      slack_params: {{ slack_params }}
+
+notification_slack_plugin:
+  file.managed:
+    - name: {{ slack_params.slack_plugin }}
+    - source: salt://nagios/files/handlers/slack/slack.py
+    - makedirs: true
+    - mode: 755
+{%- endif %}
+
+{%- if server.notification.pagerduty is defined and server.notification.pagerduty.get('enabled', false) %}
+{%- set pager_params = {
+    'pager_plugin': server.handler_dir + '/pagerduty/pagerduty.pl',
+} %}
+{%- do pager_params.update(server.notification.pagerduty) %}
+notification_nagios_pagerduty_config:
+  file.managed:
+    - name: {{ server.objects_cfg_dir }}/notify_pagerduty.cfg
+    - source: salt://nagios/files/handlers/pagerduty/notify_pagerduty.cfg
+    - template: jinja
+    - mode: 644
+    - defaults:
+      pager_params: {{ pager_params }}
+
+notification_pagerduty_plugin:
+  file.managed:
+    - name: {{ pager_params.pager_plugin }}
+    - source: salt://nagios/files/handlers/pagerduty/pagerduty.pl
+    - mode: 755
+    - makedirs: true
+
+notification_pagerduty_dependencies:
+  pkg.latest:
+    - pkgs:
+      - libjson-perl
+      - libwww-perl
+{%- endif %}
+{%- endif %}
