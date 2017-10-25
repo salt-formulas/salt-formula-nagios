@@ -28,19 +28,28 @@ nagios_cgi_server_package:
     - name: {{ server.ui.package}}
 {% endif %}
 
-{% if server.ui.auth.basic is defined and server.ui.auth.basic.password is defined %}
-nagios_cgi_username:
+{%- if server.ui.auth.basic is defined %}
+{%- set users = [] %}
+{%- if server.ui.auth.basic.password is defined %}
+{%- do users.append({'username': server.ui.auth.basic.get('username', 'nagiosadmin'), 'password': server.ui.auth.basic.password}) %}
+{%- endif %}
+{%- if server.ui.auth.basic.users is defined %}
+{%- do users.extend(server.ui.auth.basic.users) %}
+{%- endif %}
+{%- for user in users %}
+nagios_cgi_username_{{ user['username'] }}:
   webutil.user_exists:
-    - name: {{ server.ui.auth.basic.get('username', 'nagiosadmin') }}
-    - password: {{ server.ui.auth.basic.password }}
+    - name: {{ user['username'] }}
+    - password: {{ user['password'] }}
     - htpasswd_file: {{ server.ui.htpasswd_file }}
     - options: d
     - force: true
-{% else %}
+{%- endfor %}
+{%- else %}
 remove_basic_htpasswd_file:
   file.absent:
     - name: {{ server.ui.htpasswd_file }}
-{% endif %}
+{%- endif %}
 
 nagios_cgi_config:
   file.managed:

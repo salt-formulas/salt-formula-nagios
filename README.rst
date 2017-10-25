@@ -36,7 +36,7 @@ All Nagios configurations can be configured
         check_service_freshness: 1
         check_host_freshness: 0
 
-Nagios UI configrations with HTTP basic authentication
+Nagios UI configrations with HTTP basic authentication (use "readonly" flag to specify readonly users)
 
 .. code-block:: yaml
 
@@ -47,8 +47,16 @@ Nagios UI configrations with HTTP basic authentication
           enabled: true
           auth:
             basic:
+              # this is the main admin, it cannot have a 'readonly' flag.
               username: nagiosadmin
               password: secret
+              # 'users' section is optional, allows defining additional users.
+              users:
+                - username: nagios_admin_2
+                  password: secret2
+                - username: nagios_user
+                  password: secret3
+                  readonly: true
 
 Nagios UI configuration with LDAP authentication/authorization:
 
