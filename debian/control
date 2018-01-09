@@ -10,6 +10,6 @@ Vcs-Git: https://github.com/tcpcloud/salt-formula-nagios.git
 
 Package: salt-formula-nagios
 Architecture: all
-Depends: ${misc:Depends}, salt-master, reclass
+Depends: ${misc:Depends}
 Description: nagios salt formula
  Install and configure nagios system.
