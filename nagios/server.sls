@@ -121,7 +121,7 @@ wsgi_pkg:
 {%- if server.ui.auth.ldap.enabled %}
 {% for mod in ('ldap', 'authnz_ldap') %}
 enable_apache_{{ mod }}_module:
-  apache_module.enable:
+  apache_module.enabled:
     - name: {{ mod }}
     - watch_in:
       - service: {{ server.ui.apache_service }}
@@ -129,7 +129,7 @@ enable_apache_{{ mod }}_module:
 {%- endif %}
 
 enable_apache_wsgi_module:
-  apache_module.enable:
+  apache_module.enabled:
     - name: wsgi
     - require:
       - pkg: wsgi_pkg
@@ -137,7 +137,7 @@ enable_apache_wsgi_module:
       - service: {{ server.ui.apache_service }}
 
 enable Nagios WSGI conf:
-  apache_conf.enable:
+  apache_conf.enabled:
     - name: nagios_wsgi
     - require:
       - file: nagios_apache_wsgi_config
@@ -145,7 +145,7 @@ enable Nagios WSGI conf:
       - service: {{ server.ui.apache_service }}
 
 enable Nagios WSGI app:
-  apache_site.enable:
+  apache_site.enabled:
     - name: nagios_wsgi
     - require:
       - apache_module: enable_apache_wsgi_module
